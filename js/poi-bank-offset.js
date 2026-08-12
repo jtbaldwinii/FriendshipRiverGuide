@@ -43,7 +43,10 @@ export async function enablePoiBankOffsets(build){
       const t=d?Math.max(0,Math.min(1,(wx*vx+wy*vy)/d)):0;
       const p={x:a.x+t*vx,y:a.y+t*vy};
       const dd=(q.x-p.x)**2+(q.y-p.y)**2;
-      if(dd<bd){bd=dd;best={...p,q,dist:Math.sqrt(dd)}}
+      if(dd<bd){
+        const mag=Math.hypot(vx,vy)||1;
+        bd=dd;best={...p,q,dist:Math.sqrt(dd),tx:vx/mag,ty:vy/mag};
+      }
     }
     return best;
   }
@@ -52,17 +55,49 @@ export async function enablePoiBankOffsets(build){
     const svg=map.querySelector('svg.offline-map');
     if(!svg) return;
     const route=currentRoute(),dir=currentDirection(),items=routeLandmarks(route,dir),pts=activeRiver(route),b=bounds(pts,items);
+    const placements=[];
+
     svg.querySelectorAll('.map-pin').forEach(g=>{
       const l=landmarks.find(x=>x.id===g.dataset.id);if(!l)return;
       const p=nearest(l.lat,l.lng,pts,b);if(!p)return;
-      // Bridge POIs belong on the water. All other POIs sit completely beyond the river's blue corridor.
-      if(/bridge/i.test(l.id)||/bridge/i.test(l.name||'')){g.removeAttribute('transform');return;}
+      const isBridge=/bridge/i.test(l.id)||/bridge/i.test(l.name||'');
+      if(isBridge){g.removeAttribute('transform');return;}
+
       const dx=p.q.x-p.x,dy=p.q.y-p.y,mag=Math.hypot(dx,dy)||1;
       // River outer stroke is 10 SVG units wide (5 each side), and POI circles are ~2.65 units radius.
-      // A minimum centerline offset of 9.0 puts the entire marker beyond the bank with a small visual gap.
-      const offset=Math.max(9.0,Math.min(12.0,p.dist));
-      g.setAttribute('transform',`translate(${(dx/mag*offset).toFixed(2)} ${(dy/mag*offset).toFixed(2)})`);
+      // A minimum centerline offset of 9.0 keeps the entire marker beyond the blue river corridor.
+      const bankOffset=Math.max(9.0,Math.min(12.0,p.dist));
+      const ox=dx/mag*bankOffset,oy=dy/mag*bankOffset;
+      placements.push({g,p,ox,oy,x:p.x+ox,y:p.y+oy});
     });
+
+    // Collision avoidance: retain each POI on its correct bank, but slide crowded markers
+    // along the local river tangent until every circle has a comfortable clickable gap.
+    const minGap=7.0; // circle diameter ~5.3 plus tap/visual separation
+    for(let pass=0;pass<12;pass++){
+      let moved=false;
+      for(let i=0;i<placements.length;i++){
+        for(let j=i+1;j<placements.length;j++){
+          const a=placements[i],c=placements[j];
+          const dx=c.x-a.x,dy=c.y-a.y,d=Math.hypot(dx,dy);
+          if(d>=minGap) continue;
+          const need=(minGap-d)/2+.12;
+          // Use the average local river tangent, oriented consistently.
+          let tx=a.p.tx+c.p.tx,ty=a.p.ty+c.p.ty;
+          if(Math.hypot(tx,ty)<.1){tx=a.p.tx;ty=a.p.ty}
+          const tm=Math.hypot(tx,ty)||1;tx/=tm;ty/=tm;
+          // Deterministic ordering keeps markers from jittering between renders.
+          a.ox-=tx*need;a.oy-=ty*need;a.x-=tx*need;a.y-=ty*need;
+          c.ox+=tx*need;c.oy+=ty*need;c.x+=tx*need;c.y+=ty*need;
+          moved=true;
+        }
+      }
+      if(!moved)break;
+    }
+
+    for(const m of placements){
+      m.g.setAttribute('transform',`translate(${m.ox.toFixed(2)} ${m.oy.toFixed(2)})`);
+    }
   }
 
   let queued=false;
