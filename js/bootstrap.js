@@ -13,6 +13,8 @@ async function boot(){
   try{
     const mod=await import(`./app.js?v=${encodeURIComponent(version)}`);
     await mod.startApp(version);
+    const lockOverlay=await import(`./lock-overlay.js?v=${encodeURIComponent(version)}`);
+    await lockOverlay.enableLockOverlay(version);
     const bankOffsets=await import(`./poi-bank-offset.js?v=${encodeURIComponent(version)}`);
     await bankOffsets.enablePoiBankOffsets(version);
   }catch(err){
