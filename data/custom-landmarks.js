@@ -15,7 +15,7 @@ export const LANDMARK_OVERRIDES = {
     fact: 'Marina City starred in one of Chicago’s most memorable movie stunts. For Steve McQueen’s 1980 film The Hunter, a Pontiac was sent off the 17th-floor parking ramp of the west tower and plunged into the Chicago River. McQueen was in the film, but he was not driving the flying car.'
   },
   'wolf-point': {
-    fact: 'A special one for our healthcare IT guests: look toward the west end of Wolf Point for the office building with the distinctive red sculpture out front. CommonSpirit Health has offices there—an especially appropriate landmark for today’s crew.'
+    fact: 'Look toward the west end of Wolf Point for 444 W. Lake Street, the office building with the distinctive red sculpture in front. It is the corporate office of CommonSpirit Health, one of the nation’s largest nonprofit health systems.'
   }
 };
 
