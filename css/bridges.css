@@ -3,3 +3,5 @@
 .route-line{stroke:#31586b!important;stroke-width:.55!important;stroke-dasharray:.15 2.1!important;stroke-linecap:round;opacity:.34!important}
 /* Chicago Harbor Lock: a squared chamber overlay replaces the rounded river-end look. */
 .map-lock{pointer-events:none}.map-lock .lock-chamber{fill:#c2e0ea;stroke:#70aec7;stroke-width:1.5}.map-lock .lock-gate{stroke:#53666e;stroke-width:1.05;stroke-linecap:round}.map-lock .lock-label{fill:#496875;font-size:1.7px;font-weight:900;letter-spacing:.12em;paint-order:stroke;stroke:#c2e0ea;stroke-width:.55px}
+/* Make the lake/river transition immediately legible without overpowering the route. */
+.map-lake{pointer-events:none}.map-lake .lake-water{fill:#d8edf4;stroke:#8fc5d8;stroke-width:.55;opacity:.92}.map-lake .lake-label{fill:#4c7e91;font-size:2.15px;font-weight:900;letter-spacing:.14em;opacity:.9;paint-order:stroke;stroke:#d8edf4;stroke-width:.8px}
