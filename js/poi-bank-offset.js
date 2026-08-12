@@ -60,8 +60,15 @@ export async function enablePoiBankOffsets(build){
     const labelHits=(x,y,r=3.25)=>labelBoxes.reduce((n,bb)=>n+((x+r)>=bb.x&&(x-r)<=(bb.x+bb.width)&&(y+r)>=bb.y&&(y-r)<=(bb.y+bb.height)?1:0),0);
     const maxSlide=4.5;
 
+    function shiftLimits(m){
+      // Merchandise Mart sits on the straight Main Branch east of Wolf Point; do not let
+      // generic collision handling drag it back toward the confluence corner.
+      if(m.id==='merchandise-mart')return{min:-4.5,max:-2.8};
+      return{min:-maxSlide,max:maxSlide};
+    }
     function updatePosition(m){
-      m.shift=Math.max(-maxSlide,Math.min(maxSlide,m.shift||0));
+      const lim=shiftLimits(m);
+      m.shift=Math.max(lim.min,Math.min(lim.max,m.shift||0));
       m.ox=m.baseOx+m.p.tx*m.shift;m.oy=m.baseOy+m.p.ty*m.shift;
       m.x=m.p.x+m.ox;m.y=m.p.y+m.oy;
     }
@@ -69,28 +76,27 @@ export async function enablePoiBankOffsets(build){
     svg.querySelectorAll('.map-pin').forEach(g=>{
       const l=landmarks.find(x=>x.id===g.dataset.id);if(!l)return;
       const p=nearest(l.lat,l.lng,pts,b);if(!p)return;
-      // Bridges, the lock and Wolf Point are geographic centerline/confluence features.
       const isCenterline=/bridge|lock/i.test(l.id)||/bridge|lock/i.test(l.name||'')||l.id==='wolf-point';
       if(isCenterline){g.removeAttribute('transform');return;}
 
       const dx=p.q.x-p.x,dy=p.q.y-p.y,mag=Math.hypot(dx,dy)||1;
       const bankOffset=Math.max(9.0,Math.min(12.0,p.dist));
-      const m={g,p,baseOx:dx/mag*bankOffset,baseOy:dy/mag*bankOffset,shift:0};
+      const m={id:l.id,g,p,baseOx:dx/mag*bankOffset,baseOy:dy/mag*bankOffset,shift:l.id==='merchandise-mart'?-4.0:0};
       updatePosition(m);
 
-      // Resolve bridge-label conflicts by a small slide along the correct bank.
       if(labelHits(m.x,m.y)){
-        let best={shift:0,hits:labelHits(m.x,m.y)};
-        for(const s of [-4,-3,-2,-1.5,1.5,2,3,4]){
+        let best={shift:m.shift,hits:labelHits(m.x,m.y)};
+        const lim=shiftLimits(m);
+        for(const delta of [-4,-3,-2,-1.5,1.5,2,3,4]){
+          const s=Math.max(lim.min,Math.min(lim.max,m.shift+delta));
           const cx=p.x+m.baseOx+p.tx*s,cy=p.y+m.baseOy+p.ty*s,hits=labelHits(cx,cy);
-          if(hits<best.hits||(hits===best.hits&&Math.abs(s)<Math.abs(best.shift))){best={shift:s,hits};if(hits===0)break}
+          if(hits<best.hits||(hits===best.hits&&Math.abs(s-m.shift)<Math.abs(best.shift-m.shift))){best={shift:s,hits};if(hits===0)break}
         }
         m.shift=best.shift;updatePosition(m);
       }
       placements.push(m);
     });
 
-    // Separate POIs, but never let collision avoidance drag them far from their real longitude/latitude.
     const minGap=7.0;
     for(let pass=0;pass<12;pass++){
       let moved=false;
@@ -107,14 +113,14 @@ export async function enablePoiBankOffsets(build){
       if(!moved)break;
     }
 
-    // One final, bounded bridge-label cleanup.
     for(const m of placements){
       if(labelHits(m.x,m.y)){
         let best={shift:m.shift,hits:labelHits(m.x,m.y)};
+        const lim=shiftLimits(m);
         for(const delta of [-3,-2,-1,1,2,3]){
-          const s=Math.max(-maxSlide,Math.min(maxSlide,m.shift+delta));
+          const s=Math.max(lim.min,Math.min(lim.max,m.shift+delta));
           const cx=m.p.x+m.baseOx+m.p.tx*s,cy=m.p.y+m.baseOy+m.p.ty*s,hits=labelHits(cx,cy);
-          if(hits<best.hits||(hits===best.hits&&Math.abs(s)<Math.abs(best.shift))){best={shift:s,hits};if(hits===0)break}
+          if(hits<best.hits||(hits===best.hits&&Math.abs(s-m.shift)<Math.abs(best.shift-m.shift))){best={shift:s,hits};if(hits===0)break}
         }
         m.shift=best.shift;updatePosition(m);
       }
