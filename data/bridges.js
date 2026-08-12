@@ -1,6 +1,7 @@
 // Bridge centers used to draw actual crossings over the river schematic.
 // `branch` controls when the bridge is shown. `labelSide` alternates labels to reduce crowding.
 export const BRIDGES = [
+  {name:'DuSable Lake Shore Dr',branch:'main',lat:41.888307,lng:-87.61411,labelSide:1},
   {name:'Columbus Dr',branch:'main',lat:41.88848,lng:-87.62055,labelSide:1},
   {name:'Michigan Ave',branch:'main',lat:41.88868,lng:-87.62455,labelSide:-1},
   {name:'Wabash Ave',branch:'main',lat:41.88854,lng:-87.62615,labelSide:1},
