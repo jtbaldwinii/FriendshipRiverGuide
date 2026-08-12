@@ -11,12 +11,26 @@ export const LANDMARK_OVERRIDES = {
 };
 
 export const LANDMARK_ADDITIONS = [
-  // Example:
-  // {id:'new-poi',name:'New POI',lat:41.88,lng:-87.63,side:'Port',route:'south',photo:'assets/new-poi.jpg',subtitle:'...',architect:'...',year:'...',style:'...',story:'...',fact:'...'}
+  {
+    id:'chicago-harbor-lock',
+    name:'Chicago Harbor Lock',
+    lat:41.88831,
+    lng:-87.61175,
+    side:'Ahead',
+    route:'main',
+    photo:'',
+    subtitle:'The gateway separating Lake Michigan from the Chicago River',
+    architect:'Sanitary District of Chicago',
+    year:'1936–38',
+    style:'Navigation infrastructure',
+    story:'The Chicago Harbor Lock separates Lake Michigan from the Chicago River and controls the small but important difference in water level between them. Built as part of the larger river-reversal water-control system, its chamber is 600 feet long and 80 feet wide; boats move through as water enters or leaves by gravity through the lock gates.',
+    fact:'A typical lock cycle takes about 15–17 minutes, and the lake and river are commonly separated by roughly two to five feet of water level.'
+  }
 ];
 
 export const ROUTE_INSERTS = [
-  // Example:
-  // {route:'south',direction:'outbound',id:'new-poi',after:'300-wacker'},
-  // {route:'south',direction:'return',id:'new-poi',before:'300-wacker'}
+  {route:'south',direction:'outbound',id:'chicago-harbor-lock',before:'st-regis'},
+  {route:'south',direction:'return',id:'chicago-harbor-lock',after:'st-regis'},
+  {route:'north',direction:'outbound',id:'chicago-harbor-lock',before:'st-regis'},
+  {route:'north',direction:'return',id:'chicago-harbor-lock',after:'st-regis'}
 ];
