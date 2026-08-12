@@ -1,1 +1,47 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Friendship River Guide</title><meta http-equiv="refresh" content="0; url=./guide.html"><script>location.replace('./guide.html');</script></head><body><p>Opening Friendship River Guide… <a href="./guide.html">Continue</a></p></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0a2536">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Friendship • Chicago River Guide</title>
+<link rel="stylesheet" href="css/app.css?v=2">
+<script>document.documentElement.classList.add("js");</script>
+</head>
+<body>
+<header class="topbar">
+  <button class="brand" id="homeBtn" aria-label="Guide home"><span class="flag">★</span><span><strong>FRIENDSHIP</strong><small>CHICAGO RIVER GUIDE</small></span></button>
+  <button id="gpsBtn" class="gps-button"><span class="gps-dot"></span><span id="gpsLabel">Start GPS</span></button>
+</header>
+<main>
+<section id="cruiseView" class="view active">
+  <div class="route-strip">
+    <select id="routeSelect" aria-label="Tour route"><option value="south">Main + South Branch</option><option value="north">Main + North Branch</option></select>
+    <div class="direction-toggle" role="group"><button data-dir="outbound" class="active">Outbound</button><button data-dir="return">Return</button></div>
+  </div>
+  <article id="heroCard" class="hero-card">
+    <div class="hero-image"><span class="hero-badge">LANDMARK 1</span><div class="hero-title-wrap"><span class="eyebrow">OUTBOUND • STARBOARD</span><h1>St. Regis Chicago</h1><p>Jeanne Gang’s stacked, flowing skyline landmark</p></div></div>
+    <div class="hero-body"><p>Three interconnected towers step rhythmically toward the sky, creating one of Chicago’s most distinctive silhouettes.</p></div>
+  </article>
+  <section class="next-panel"><div><span class="eyebrow">UP NEXT</span><h3 id="nextName">Aqua</h3><p id="nextMeta">Starboard</p></div><div class="next-actions"><button id="prevBtn" class="circle-btn prev-btn" aria-label="Previous landmark">←</button><button id="nextBtn" class="circle-btn" aria-label="Next landmark">→</button></div></section>
+  <section class="status-card" id="gpsStatus"><div><span class="eyebrow">GPS STATUS</span><strong>Not started</strong></div><p>Tap Start GPS for live location. Cruise Mode also works manually with the arrows.</p></section>
+</section>
+<section id="mapView" class="view"><div id="map"></div><div class="map-sheet"><strong id="mapSheetTitle">Tour map</strong><span id="mapSheetText">Tap a landmark pin for details.</span></div></section>
+<section id="browseView" class="view"><div class="browse-head"><div><span class="eyebrow">ALL LANDMARKS</span><h1>Explore the river</h1></div><input id="searchInput" type="search" placeholder="Search"></div><div id="landmarkList" class="landmark-list"></div></section>
+<section id="chicagoView" class="view chicago-view">
+  <div class="chicago-head"><span class="eyebrow">BEYOND THE LANDMARKS</span><h1>Know Chicago</h1><p>The stories and symbols that make the buildings, bridges and river fit together.</p></div>
+  <article class="story-card flag-wrap"><div class="flag-title"><span class="story-kicker">★ Chicago symbol</span><h2>Know the Chicago flag</h2></div><div class="chicago-flag" role="img" aria-label="Chicago flag with two blue stripes and four red six-pointed stars"><div class="flag-stripe top"></div><div class="flag-stars"><span>✶</span><span>✶</span><span>✶</span><span>✶</span></div><div class="flag-stripe bottom"></div></div><div class="flag-grid"><div class="flag-item"><strong>Two blue stripes</strong><span>Represent Chicago's waterways: Lake Michigan, the Chicago River system and the great canal connection.</span></div><div class="flag-item"><strong>Four red stars</strong><span>Fort Dearborn; the Great Chicago Fire; the 1893 World's Columbian Exposition; and the 1933–34 Century of Progress.</span></div><div class="flag-item"><strong>Six points each</strong><span>Chicago deliberately uses six-pointed stars. Each star's points carry additional symbolic meanings.</span></div><div class="flag-item"><strong>Designed in 1917</strong><span>Wallace Rice designed the flag. It originally had two stars; two more were added later.</span></div></div></article>
+  <article class="story-card"><span class="story-kicker">Chicago story</span><h2>Why Chicago became Chicago</h2><h3>Water + rail + geography</h3><ul><li>Chicago sits near a low continental divide between the Great Lakes and Mississippi watersheds.</li><li>Early portage routes made the location strategically important before a major city existed.</li><li>Canals strengthened the water connection; railroads then multiplied Chicago's reach.</li><li>The city became a transfer point where goods, people, livestock, grain and mail changed transportation modes.</li><li>Much of the architecture along the river is a consequence of that economic geography.</li></ul><p class="takeaway"><strong>Worth knowing:</strong> Chicago did not become huge simply because it sat on Lake Michigan. Its power came from connecting transportation systems.</p></article>
+  <article class="story-card"><span class="story-kicker">Engineering</span><h2>The river that changed direction</h2><ul><li>The Chicago River originally flowed toward Lake Michigan.</li><li>In 1900, Chicago completed the canal system that reversed the river's flow away from the lake.</li><li>Protecting Lake Michigan—the city's drinking-water source—was a major reason for the project.</li><li>The present Chicago Harbor Lock dates to the 1930s and helps control the lake-river connection.</li></ul><p class="takeaway">The memorable part is not simply that Chicago cleaned its river. The city re-engineered the regional water system.</p></article>
+  <article class="story-card"><span class="story-kicker">Look around</span><h2>Chicago is a bridge city</h2><ul><li>Downtown street bridges are part of the city's navigation system, not just roadways.</li><li>The movable bridges let dense street grids coexist with a working river.</li><li>Bridge street names are one of the easiest ways to orient yourself as we move through downtown.</li><li>Watch how bridgehouses, steel trusses and skyscrapers form a layered streetscape visible only from the water.</li></ul></article>
+  <article class="story-card"><span class="story-kicker">Return trip</span><h2>Don't repeat the tour—connect it</h2><ul><li>Compare River City with Marina City: same architect, radically different form.</li><li>Compare Aqua with St. Regis: same architect, two very different responses to form, site and wind.</li><li>At 150 North Riverside, look at the narrow base before looking up.</li><li>At Wolf Point, see if you can identify all three branches without the guide.</li><li>Compare older buildings that treated the river as infrastructure with newer buildings designed around river views and public space.</li></ul></article>
+  <article class="story-card"><span class="story-kicker">Take it home</span><h2>Three big ideas</h2><p class="takeaway"><strong>1.</strong> Chicago exists where it does because of water and transportation.</p><p class="takeaway"><strong>2.</strong> Its architecture is inseparable from engineering—wind, soil, railroads, bridges and tight sites shaped what was possible.</p><p class="takeaway"><strong>3.</strong> The Chicago River isn't scenery behind the city. It is one of the main reasons the city exists.</p></article>
+</section>
+</main>
+<nav class="bottom-nav"><button data-view="cruiseView" class="active"><span>◉</span>Cruise</button><button data-view="mapView"><span>◇</span>Map</button><button data-view="browseView"><span>☰</span>Explore</button><button data-view="chicagoView"><span>★</span>Chicago</button></nav>
+<div id="detailModal" class="modal" aria-hidden="true"><div class="modal-backdrop"></div><article class="modal-card"><button id="closeModal" class="close-btn">×</button><div id="modalContent"></div></article></div>
+<script type="module" src="js/app.js?v=2"></script>
+</body>
+</html>
