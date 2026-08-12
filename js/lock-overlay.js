@@ -35,8 +35,7 @@ export async function enableLockOverlay(build){
   function line(x1,y1,x2,y2,cls){const e=document.createElementNS(NS,'line');for(const [k,val] of Object.entries({x1,y1,x2,y2}))e.setAttribute(k,val);e.setAttribute('class',cls);return e}
 
   function apply(){
-    const svg=map.querySelector('svg.offline-map');if(!svg)return;
-    svg.querySelector('.map-lock')?.remove();
+    const svg=map.querySelector('svg.offline-map');if(!svg||svg.querySelector('.map-lock'))return;
     svg.querySelectorAll('.map-ref').forEach(g=>{if(/Chicago Lock/i.test(g.textContent||''))g.remove()});
 
     const r=route(),d=dir(),pts=activeRiver(r),items=routeItems(r,d),b=bounds(pts,items);
