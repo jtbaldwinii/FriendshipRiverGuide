@@ -1,6 +1,4 @@
 // Friendship River Guide analytics. No GPS coordinates or user-entered data are sent.
-const MEASUREMENT_ID='G-EXR0EH5GRD';
-
 function send(name,params={}){
   if(typeof window.gtag!=='function')return;
   window.gtag('event',name,{...params,transport_type:'beacon'});
@@ -8,13 +6,6 @@ function send(name,params={}){
 function viewName(id){return({cruiseView:'cruise',mapView:'map',browseView:'explore',chicagoView:'chicago'})[id]||id||'unknown'}
 
 export function enableAnalytics(){
-  window.dataLayer=window.dataLayer||[];
-  window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};
-  window.gtag('js',new Date());
-  window.gtag('config',MEASUREMENT_ID,{send_page_view:true,anonymize_ip:true});
-
-  const s=document.createElement('script');s.async=true;s.src=`https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`;document.head.appendChild(s);
-
   send('guide_loaded',{
     device_class:matchMedia('(max-width: 767px)').matches?'phone':matchMedia('(max-width: 1100px)').matches?'tablet':'desktop',
     screen_width:window.screen?.width||0,
