@@ -7,7 +7,13 @@ export const LANDMARK_OVERRIDES = {
     photo: 'assets/st-regis-2026.jpg',
     fact: 'See the dark band near the top of the tallest tower? Wind-tunnel testing showed the building would sway more than desired for occupant comfort, so the design was revised to create an unoccupied, two-story-tall “blow-through” opening. Letting wind pass through the tower reduces wind-induced motion—the unusual dark gap is structural engineering made visible.'
   },
-  'willis-tower': { photo: 'assets/willis-tower-2026(1).jpg' }
+  'willis-tower': {
+    photo: 'assets/willis-tower-2026(1).jpg',
+    fact: 'The bundled-tube idea is famously explained with a handful of cigarettes: nine cigarettes held together illustrate the nine structural tubes that form the tower. Engineer Fazlur Rahman Khan used the cigarette-bundle analogy to make the structural concept easy to visualize.'
+  },
+  'marina-city': {
+    fact: 'Marina City starred in one of Chicago’s most memorable movie stunts. For Steve McQueen’s 1980 film The Hunter, a Pontiac was sent off the 17th-floor parking ramp of the west tower and plunged into the Chicago River. McQueen was in the film, but he was not driving the flying car.'
+  }
 };
 
 export const LANDMARK_ADDITIONS = [
@@ -41,7 +47,7 @@ export const LANDMARK_ADDITIONS = [
     year:'1929',
     style:'Art Deco / French Renaissance Revival',
     story:'Built for utility magnate Samuel Insull, the Civic Opera Building combines a grand opera house with a massive commercial office complex. From the river, the composition is especially legible: the low central auditorium, flanking office wings and tall rear tower create a monumental stepped silhouette.',
-    fact:'From the Chicago River, the building has long been compared to an enormous armchair or throne—the auditorium forms the “seat,” the office wings the “arms,” and the 45-story tower the “back.”'
+    fact:'The river facade really does resemble a giant armchair—the opera house is the “seat,” the office wings are the “arms,” and the 45-story tower is the “back.” A popular Chicago legend says Insull deliberately turned that chair’s back toward New York; the armchair form is documented, but the New York snub is best treated as lore rather than proven design intent.'
   }
 ];
 
