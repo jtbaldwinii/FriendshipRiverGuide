@@ -56,6 +56,8 @@ export async function enablePoiBankOffsets(build){
     if(!svg) return;
     const route=currentRoute(),dir=currentDirection(),items=routeLandmarks(route,dir),pts=activeRiver(route),b=bounds(pts,items);
     const placements=[];
+    const labelBoxes=[...svg.querySelectorAll('.map-bridge text')].map(t=>{try{return t.getBBox()}catch(e){return null}}).filter(Boolean);
+    const labelHits=(x,y,r=3.25)=>labelBoxes.reduce((n,bb)=>n+((x+r)>=bb.x&&(x-r)<=(bb.x+bb.width)&&(y+r)>=bb.y&&(y-r)<=(bb.y+bb.height)?1:0),0);
 
     svg.querySelectorAll('.map-pin').forEach(g=>{
       const l=landmarks.find(x=>x.id===g.dataset.id);if(!l)return;
@@ -65,12 +67,19 @@ export async function enablePoiBankOffsets(build){
 
       const dx=p.q.x-p.x,dy=p.q.y-p.y,mag=Math.hypot(dx,dy)||1;
       const bankOffset=Math.max(9.0,Math.min(12.0,p.dist));
-      const ox=dx/mag*bankOffset,oy=dy/mag*bankOffset;
-      placements.push({g,p,ox,oy,x:p.x+ox,y:p.y+oy});
+      let ox=dx/mag*bankOffset,oy=dy/mag*bankOffset;
+      let x=p.x+ox,y=p.y+oy;
+
+      // Prefer the true geographic bank, but flip when a bridge label would be obscured.
+      const normalHits=labelHits(x,y);
+      const fx=p.x-ox,fy=p.y-oy,flippedHits=labelHits(fx,fy);
+      if(flippedHits<normalHits){ox=-ox;oy=-oy;x=fx;y=fy}
+      placements.push({g,p,ox,oy,x,y});
     });
 
+    // Separate POI circles so every marker remains individually tappable.
     const minGap=7.0;
-    for(let pass=0;pass<12;pass++){
+    for(let pass=0;pass<14;pass++){
       let moved=false;
       for(let i=0;i<placements.length;i++){
         for(let j=i+1;j<placements.length;j++){
@@ -89,7 +98,13 @@ export async function enablePoiBankOffsets(build){
       if(!moved)break;
     }
 
+    // If separation moved a marker onto a bridge name, flip it only when the other bank is cleaner.
     for(const m of placements){
+      const currentHits=labelHits(m.x,m.y);
+      if(currentHits){
+        const fx=m.p.x-(m.x-m.p.x),fy=m.p.y-(m.y-m.p.y);
+        if(labelHits(fx,fy)<currentHits){m.ox=fx-m.p.x;m.oy=fy-m.p.y;m.x=fx;m.y=fy}
+      }
       m.g.setAttribute('transform',`translate(${m.ox.toFixed(2)} ${m.oy.toFixed(2)})`);
     }
   }
