@@ -11,6 +11,8 @@ async function boot(){
   if(bridgeCss)bridgeCss.href=`css/bridges.css?v=${encodeURIComponent(version)}`;
 
   try{
+    const analytics=await import(`./analytics.js?v=${encodeURIComponent(version)}`);
+    analytics.enableAnalytics();
     const mod=await import(`./app.js?v=${encodeURIComponent(version)}`);
     await mod.startApp(version);
     const lockOverlay=await import(`./lock-overlay.js?v=${encodeURIComponent(version)}`);
