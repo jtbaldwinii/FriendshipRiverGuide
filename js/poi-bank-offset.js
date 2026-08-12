@@ -70,14 +70,24 @@ export async function enablePoiBankOffsets(build){
       let ox=dx/mag*bankOffset,oy=dy/mag*bankOffset;
       let x=p.x+ox,y=p.y+oy;
 
-      // Prefer the true geographic bank, but flip when a bridge label would be obscured.
-      const normalHits=labelHits(x,y);
-      const fx=p.x-ox,fy=p.y-oy,flippedHits=labelHits(fx,fy);
-      if(flippedHits<normalHits){ox=-ox;oy=-oy;x=fx;y=fy}
+      // Geographic correctness wins: never flip a landmark to the opposite bank.
+      // If a bridge label conflicts, slide the marker along its own bank instead.
+      if(labelHits(x,y)){
+        let best={ox,oy,x,y,hits:labelHits(x,y),shift:0};
+        const candidates=[-8,-6,-4,-2,2,4,6,8];
+        for(const s of candidates){
+          const cx=x+p.tx*s,cy=y+p.ty*s,hits=labelHits(cx,cy);
+          if(hits<best.hits||(hits===best.hits&&Math.abs(s)<Math.abs(best.shift))){
+            best={ox:ox+p.tx*s,oy:oy+p.ty*s,x:cx,y:cy,hits,shift:s};
+            if(hits===0)break;
+          }
+        }
+        ({ox,oy,x,y}=best);
+      }
       placements.push({g,p,ox,oy,x,y});
     });
 
-    // Separate POI circles so every marker remains individually tappable.
+    // Separate POI circles while preserving their bank side.
     const minGap=7.0;
     for(let pass=0;pass<14;pass++){
       let moved=false;
@@ -98,12 +108,18 @@ export async function enablePoiBankOffsets(build){
       if(!moved)break;
     }
 
-    // If separation moved a marker onto a bridge name, flip it only when the other bank is cleaner.
+    // Final bridge-label cleanup, again by sliding along the same bank only.
     for(const m of placements){
-      const currentHits=labelHits(m.x,m.y);
-      if(currentHits){
-        const fx=m.p.x-(m.x-m.p.x),fy=m.p.y-(m.y-m.p.y);
-        if(labelHits(fx,fy)<currentHits){m.ox=fx-m.p.x;m.oy=fy-m.p.y;m.x=fx;m.y=fy}
+      if(labelHits(m.x,m.y)){
+        let best={x:m.x,y:m.y,ox:m.ox,oy:m.oy,hits:labelHits(m.x,m.y),shift:0};
+        for(const s of [-8,-6,-4,-2,2,4,6,8]){
+          const cx=m.x+m.p.tx*s,cy=m.y+m.p.ty*s,hits=labelHits(cx,cy);
+          if(hits<best.hits||(hits===best.hits&&Math.abs(s)<Math.abs(best.shift))){
+            best={x:cx,y:cy,ox:m.ox+m.p.tx*s,oy:m.oy+m.p.ty*s,hits,shift:s};
+            if(hits===0)break;
+          }
+        }
+        Object.assign(m,best);
       }
       m.g.setAttribute('transform',`translate(${m.ox.toFixed(2)} ${m.oy.toFixed(2)})`);
     }
