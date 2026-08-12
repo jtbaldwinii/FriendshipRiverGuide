@@ -6,8 +6,12 @@
 <meta name="theme-color" content="#0a2536">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Friendship • Chicago River Guide</title>
-<link rel="stylesheet" href="css/app.css?v=5">
+<link id="appStyles" rel="stylesheet" href="css/app.css">
+<link id="bridgeStyles" rel="stylesheet" href="css/bridges.css">
 <script>document.documentElement.classList.add("js");</script>
 </head>
 <body>
@@ -42,7 +46,6 @@
 </main>
 <nav class="bottom-nav"><button data-view="cruiseView" class="active"><span>◉</span>Cruise</button><button data-view="mapView"><span>◇</span>Map</button><button data-view="browseView"><span>☰</span>Explore</button><button data-view="chicagoView"><span>★</span>Chicago</button></nav>
 <div id="detailModal" class="modal" aria-hidden="true"><div class="modal-backdrop"></div><article class="modal-card"><button id="closeModal" class="close-btn">×</button><div id="modalContent"></div></article></div>
-<script type="module" src="js/app.js?v=5"></script>
-<script type="module" src="js/photo-fix-v7.js?v=7"></script>
+<script src="js/bootstrap.js"></script>
 </body>
 </html>
