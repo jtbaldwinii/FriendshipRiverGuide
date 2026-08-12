@@ -17,6 +17,8 @@ async function boot(){
     await lockOverlay.enableLockOverlay(version);
     const bankOffsets=await import(`./poi-bank-offset.js?v=${encodeURIComponent(version)}`);
     await bankOffsets.enablePoiBankOffsets(version);
+    const poiUse=await import(`./poi-use.js?v=${encodeURIComponent(version)}`);
+    poiUse.enablePoiUse();
   }catch(err){
     console.error(err);
     const card=document.getElementById('gpsStatus');
