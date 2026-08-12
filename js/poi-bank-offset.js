@@ -58,68 +58,65 @@ export async function enablePoiBankOffsets(build){
     const placements=[];
     const labelBoxes=[...svg.querySelectorAll('.map-bridge text')].map(t=>{try{return t.getBBox()}catch(e){return null}}).filter(Boolean);
     const labelHits=(x,y,r=3.25)=>labelBoxes.reduce((n,bb)=>n+((x+r)>=bb.x&&(x-r)<=(bb.x+bb.width)&&(y+r)>=bb.y&&(y-r)<=(bb.y+bb.height)?1:0),0);
+    const maxSlide=4.5;
+
+    function updatePosition(m){
+      m.shift=Math.max(-maxSlide,Math.min(maxSlide,m.shift||0));
+      m.ox=m.baseOx+m.p.tx*m.shift;m.oy=m.baseOy+m.p.ty*m.shift;
+      m.x=m.p.x+m.ox;m.y=m.p.y+m.oy;
+    }
 
     svg.querySelectorAll('.map-pin').forEach(g=>{
       const l=landmarks.find(x=>x.id===g.dataset.id);if(!l)return;
       const p=nearest(l.lat,l.lng,pts,b);if(!p)return;
-      const isCenterline=/bridge|lock/i.test(l.id)||/bridge|lock/i.test(l.name||'');
+      // Bridges, the lock and Wolf Point are geographic centerline/confluence features.
+      const isCenterline=/bridge|lock/i.test(l.id)||/bridge|lock/i.test(l.name||'')||l.id==='wolf-point';
       if(isCenterline){g.removeAttribute('transform');return;}
 
       const dx=p.q.x-p.x,dy=p.q.y-p.y,mag=Math.hypot(dx,dy)||1;
       const bankOffset=Math.max(9.0,Math.min(12.0,p.dist));
-      let ox=dx/mag*bankOffset,oy=dy/mag*bankOffset;
-      let x=p.x+ox,y=p.y+oy;
+      const m={g,p,baseOx:dx/mag*bankOffset,baseOy:dy/mag*bankOffset,shift:0};
+      updatePosition(m);
 
-      // Geographic correctness wins: never flip a landmark to the opposite bank.
-      // If a bridge label conflicts, slide the marker along its own bank instead.
-      if(labelHits(x,y)){
-        let best={ox,oy,x,y,hits:labelHits(x,y),shift:0};
-        const candidates=[-8,-6,-4,-2,2,4,6,8];
-        for(const s of candidates){
-          const cx=x+p.tx*s,cy=y+p.ty*s,hits=labelHits(cx,cy);
-          if(hits<best.hits||(hits===best.hits&&Math.abs(s)<Math.abs(best.shift))){
-            best={ox:ox+p.tx*s,oy:oy+p.ty*s,x:cx,y:cy,hits,shift:s};
-            if(hits===0)break;
-          }
+      // Resolve bridge-label conflicts by a small slide along the correct bank.
+      if(labelHits(m.x,m.y)){
+        let best={shift:0,hits:labelHits(m.x,m.y)};
+        for(const s of [-4,-3,-2,-1.5,1.5,2,3,4]){
+          const cx=p.x+m.baseOx+p.tx*s,cy=p.y+m.baseOy+p.ty*s,hits=labelHits(cx,cy);
+          if(hits<best.hits||(hits===best.hits&&Math.abs(s)<Math.abs(best.shift))){best={shift:s,hits};if(hits===0)break}
         }
-        ({ox,oy,x,y}=best);
+        m.shift=best.shift;updatePosition(m);
       }
-      placements.push({g,p,ox,oy,x,y});
+      placements.push(m);
     });
 
-    // Separate POI circles while preserving their bank side.
+    // Separate POIs, but never let collision avoidance drag them far from their real longitude/latitude.
     const minGap=7.0;
-    for(let pass=0;pass<14;pass++){
+    for(let pass=0;pass<12;pass++){
       let moved=false;
       for(let i=0;i<placements.length;i++){
         for(let j=i+1;j<placements.length;j++){
           const a=placements[i],c=placements[j];
-          const dx=c.x-a.x,dy=c.y-a.y,d=Math.hypot(dx,dy);
-          if(d>=minGap) continue;
+          const d=Math.hypot(c.x-a.x,c.y-a.y);if(d>=minGap)continue;
           const need=(minGap-d)/2+.12;
-          let tx=a.p.tx+c.p.tx,ty=a.p.ty+c.p.ty;
-          if(Math.hypot(tx,ty)<.1){tx=a.p.tx;ty=a.p.ty}
-          const tm=Math.hypot(tx,ty)||1;tx/=tm;ty/=tm;
-          a.ox-=tx*need;a.oy-=ty*need;a.x-=tx*need;a.y-=ty*need;
-          c.ox+=tx*need;c.oy+=ty*need;c.x+=tx*need;c.y+=ty*need;
-          moved=true;
+          const oldA=a.shift,oldC=c.shift;
+          a.shift-=need;c.shift+=need;updatePosition(a);updatePosition(c);
+          if(a.shift!==oldA||c.shift!==oldC)moved=true;
         }
       }
       if(!moved)break;
     }
 
-    // Final bridge-label cleanup, again by sliding along the same bank only.
+    // One final, bounded bridge-label cleanup.
     for(const m of placements){
       if(labelHits(m.x,m.y)){
-        let best={x:m.x,y:m.y,ox:m.ox,oy:m.oy,hits:labelHits(m.x,m.y),shift:0};
-        for(const s of [-8,-6,-4,-2,2,4,6,8]){
-          const cx=m.x+m.p.tx*s,cy=m.y+m.p.ty*s,hits=labelHits(cx,cy);
-          if(hits<best.hits||(hits===best.hits&&Math.abs(s)<Math.abs(best.shift))){
-            best={x:cx,y:cy,ox:m.ox+m.p.tx*s,oy:m.oy+m.p.ty*s,hits,shift:s};
-            if(hits===0)break;
-          }
+        let best={shift:m.shift,hits:labelHits(m.x,m.y)};
+        for(const delta of [-3,-2,-1,1,2,3]){
+          const s=Math.max(-maxSlide,Math.min(maxSlide,m.shift+delta));
+          const cx=m.p.x+m.baseOx+m.p.tx*s,cy=m.p.y+m.baseOy+m.p.ty*s,hits=labelHits(cx,cy);
+          if(hits<best.hits||(hits===best.hits&&Math.abs(s)<Math.abs(best.shift))){best={shift:s,hits};if(hits===0)break}
         }
-        Object.assign(m,best);
+        m.shift=best.shift;updatePosition(m);
       }
       m.g.setAttribute('transform',`translate(${m.ox.toFixed(2)} ${m.oy.toFixed(2)})`);
     }
