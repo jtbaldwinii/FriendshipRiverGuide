@@ -3,7 +3,10 @@
 // Use LANDMARK_ADDITIONS + ROUTE_INSERTS to add new POIs.
 
 export const LANDMARK_OVERRIDES = {
-  'st-regis': { photo: 'assets/st-regis-2026.jpg' },
+  'st-regis': {
+    photo: 'assets/st-regis-2026.jpg',
+    fact: 'See the dark band near the top of the tallest tower? Wind-tunnel testing showed the building would sway more than desired for occupant comfort, so the design was revised to create an unoccupied, two-story-tall “blow-through” opening. Letting wind pass through the tower reduces wind-induced motion—the unusual dark gap is structural engineering made visible.'
+  },
   'willis-tower': { photo: 'assets/willis-tower-2026(1).jpg' }
 };
 
