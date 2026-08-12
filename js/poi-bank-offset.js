@@ -55,10 +55,12 @@ export async function enablePoiBankOffsets(build){
     svg.querySelectorAll('.map-pin').forEach(g=>{
       const l=landmarks.find(x=>x.id===g.dataset.id);if(!l)return;
       const p=nearest(l.lat,l.lng,pts,b);if(!p)return;
-      // Keep river/bridge-type POIs centered; otherwise move the marker toward the true bank.
-      if(p.dist<1.15){g.removeAttribute('transform');return;}
+      // Bridge POIs belong on the water. All other POIs sit completely beyond the river's blue corridor.
+      if(/bridge/i.test(l.id)||/bridge/i.test(l.name||'')){g.removeAttribute('transform');return;}
       const dx=p.q.x-p.x,dy=p.q.y-p.y,mag=Math.hypot(dx,dy)||1;
-      const offset=Math.min(5.2,Math.max(3.9,p.dist*.72));
+      // River outer stroke is 10 SVG units wide (5 each side), and POI circles are ~2.65 units radius.
+      // A minimum centerline offset of 9.0 puts the entire marker beyond the bank with a small visual gap.
+      const offset=Math.max(9.0,Math.min(12.0,p.dist));
       g.setAttribute('transform',`translate(${(dx/mag*offset).toFixed(2)} ${(dy/mag*offset).toFixed(2)})`);
     });
   }
