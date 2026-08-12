@@ -41,6 +41,21 @@ export async function enableLockOverlay(build){
     const r=route(),d=dir(),pts=activeRiver(r),items=routeItems(r,d),b=bounds(pts,items);
     const west=project(41.88831,-87.61345,b),east=project(41.88831,-87.61060,b);
     const left=Math.min(west.x,east.x),right=Math.max(west.x,east.x)+1.0,cy=(west.y+east.y)/2,h=7.0;
+
+    // Lake Michigan: extend a clearly labeled water field east of the lock.
+    const lake=document.createElementNS(NS,'g');lake.setAttribute('class','map-lake');
+    const lakeRect=document.createElementNS(NS,'rect');
+    lakeRect.setAttribute('x',right-.2);lakeRect.setAttribute('y',Math.max(0,cy-16));
+    lakeRect.setAttribute('width',Math.max(0,100-right+.2));lakeRect.setAttribute('height','32');
+    lakeRect.setAttribute('class','lake-water');lake.appendChild(lakeRect);
+    const lakeLabel=document.createElementNS(NS,'text');
+    lakeLabel.setAttribute('x',Math.min(96,right+Math.max(5,(100-right)/2)));
+    lakeLabel.setAttribute('y',cy-7.8);lakeLabel.setAttribute('text-anchor','middle');lakeLabel.setAttribute('class','lake-label');
+    const t1=document.createElementNS(NS,'tspan');t1.setAttribute('x',lakeLabel.getAttribute('x'));t1.textContent='LAKE';lakeLabel.appendChild(t1);
+    const t2=document.createElementNS(NS,'tspan');t2.setAttribute('x',lakeLabel.getAttribute('x'));t2.setAttribute('dy','3.1');t2.textContent='MICHIGAN';lakeLabel.appendChild(t2);
+    lake.appendChild(lakeLabel);
+    const first=svg.firstChild;if(first)svg.insertBefore(lake,first);else svg.appendChild(lake);
+
     const g=document.createElementNS(NS,'g');g.setAttribute('class','map-lock');
     const rect=document.createElementNS(NS,'rect');rect.setAttribute('x',left);rect.setAttribute('y',cy-h/2);rect.setAttribute('width',right-left);rect.setAttribute('height',h);rect.setAttribute('rx','.45');rect.setAttribute('class','lock-chamber');g.appendChild(rect);
     const westGate=project(41.88831,-87.61325,b),eastGate=project(41.88831,-87.61082,b);
