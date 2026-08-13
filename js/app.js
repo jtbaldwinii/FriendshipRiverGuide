@@ -47,8 +47,8 @@ function configureBranchRoutes(){
       return:['st-charles-bridge','river-city','cbot','300-wacker','willis-tower','civic-opera','150-riverside','wolf-point']
     },
     north:{
-      outbound:['wolf-point','erie-park','wild-mile','ballys','salt-shed'],
-      return:['salt-shed','ballys','wild-mile','erie-park','wolf-point']
+      outbound:['wolf-point','erie-park','montgomery-ward','wild-mile','ballys','salt-shed'],
+      return:['salt-shed','ballys','wild-mile','montgomery-ward','erie-park','wolf-point']
     }
   };
 }
