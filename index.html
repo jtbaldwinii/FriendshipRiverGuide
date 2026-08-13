@@ -39,7 +39,10 @@ document.documentElement.classList.add("js");
   <section class="next-panel"><div><span class="eyebrow">UP NEXT</span><h3 id="nextName">St. Regis Chicago</h3><p id="nextMeta">Starboard</p></div><div class="next-actions"><button id="prevBtn" class="circle-btn prev-btn" aria-label="Previous landmark">←</button><button id="nextBtn" class="circle-btn" aria-label="Next landmark">→</button></div></section>
   <section class="status-card" id="gpsStatus"><div><span class="eyebrow">GPS STATUS</span><strong>Not started</strong></div><p>Tap Start GPS for live location. Cruise Mode also works manually with the arrows.</p></section>
 </section>
-<section id="mapView" class="view"><div id="map"></div><div class="map-sheet"><strong id="mapSheetTitle">Tour map</strong><span id="mapSheetText">Tap a landmark pin for details.</span></div></section>
+<section id="mapView" class="view">
+  <div class="route-strip map-route-strip"><select id="mapRouteSelect" aria-label="Map river branch"><option value="main">Main Branch</option><option value="south">South Branch</option><option value="north">North Branch</option></select></div>
+  <div id="map"></div><div class="map-sheet"><strong id="mapSheetTitle">Tour map</strong><span id="mapSheetText">Tap a landmark pin for details.</span></div>
+</section>
 <section id="browseView" class="view"><div class="browse-head"><div><span class="eyebrow">ALL LANDMARKS</span><h1>Explore the river</h1></div><input id="searchInput" type="search" placeholder="Search"></div><div id="landmarkList" class="landmark-list"></div></section>
 <section id="chicagoView" class="view chicago-view">
   <div class="chicago-head"><span class="eyebrow">BEYOND THE LANDMARKS</span><h1>Know Chicago</h1><p>The stories and symbols that make the buildings, bridges and river fit together.</p></div>
