@@ -12,7 +12,8 @@ export const LANDMARK_OVERRIDES = {
     fact: 'The bundled-tube idea is famously explained with a handful of cigarettes: nine cigarettes held together illustrate the nine structural tubes that form the tower. Engineer Fazlur Rahman Khan used the cigarette-bundle analogy to make the structural concept easy to visualize.'
   },
   '300-wacker': {
-    photo: 'assets/300-south-wacker-2026.jpg'
+    photo: 'assets/300-south-wacker-2026.jpg',
+    fact: 'The illuminated west facade is a giant stylized map of the Chicago River. Look for the small red rectangle in the graphic—it marks 300 South Wacker’s own location on the river, so the building literally places a “you are here” marker on its facade.'
   },
   'marina-city': {
     fact: 'Marina City starred in one of Chicago’s most memorable movie stunts. For Steve McQueen’s 1980 film The Hunter, a Pontiac was sent off the 17th-floor parking ramp of the west tower and plunged into the Chicago River. McQueen was in the film, but he was not driving the flying car.'
