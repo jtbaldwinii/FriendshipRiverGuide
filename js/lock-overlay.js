@@ -42,11 +42,11 @@ export async function enableLockOverlay(build){
     const west=project(41.88831,-87.61345,b),east=project(41.88831,-87.61060,b);
     const left=Math.min(west.x,east.x),right=Math.max(west.x,east.x)+1.0,cy=(west.y+east.y)/2,h=7.0;
 
-    // Lake Michigan is intentionally wider than the literal shoreline footprint so the
-    // lake-to-lock-to-river orientation is obvious at a glance on a phone-sized map.
+    // Treat the eastern quarter of the schematic as Lake Michigan. This is intentionally
+    // diagrammatic rather than geographic so the lake/lock/river transition is obvious.
     const lake=document.createElementNS(NS,'g');lake.setAttribute('class','map-lake');
     const lakeRect=document.createElementNS(NS,'rect');
-    const lakeStart=Math.min(right-.2,84);
+    const lakeStart=Math.min(right-.2,72);
     lakeRect.setAttribute('x',lakeStart);lakeRect.setAttribute('y','0');
     lakeRect.setAttribute('width',100-lakeStart);lakeRect.setAttribute('height','128');
     lakeRect.setAttribute('class','lake-water');lake.appendChild(lakeRect);
