@@ -58,20 +58,20 @@ export async function enablePoiBankOffsets(build){
     const placements=[];
     const labelBoxes=[...svg.querySelectorAll('.map-bridge text')].map(t=>{try{return t.getBBox()}catch(e){return null}}).filter(Boolean);
     const labelHits=(x,y,r=3.25)=>labelBoxes.reduce((n,bb)=>n+((x+r)>=bb.x&&(x-r)<=(bb.x+bb.width)&&(y+r)>=bb.y&&(y-r)<=(bb.y+bb.height)?1:0),0);
-    const maxSlide=4.5;
+    const maxSlide=5.5;
 
     function shiftLimits(m){
       if(m.id==='merchandise-mart')return{min:-4.5,max:-2.8};
-      // Keep 300 South Wacker and Willis deliberately on opposite ends of their
-      // permitted along-bank movement so both numbered markers remain tappable.
-      if(m.id==='300-wacker')return{min:-4.5,max:-2.0};
-      if(m.id==='willis-tower')return{min:2.0,max:4.5};
+      // Willis is physically north of 300 South Wacker. Keep that order on the map:
+      // Willis slides north/up the bank and Wacker slides south/down the bank.
+      if(m.id==='300-wacker')return{min:3.5,max:5.5};
+      if(m.id==='willis-tower')return{min:-5.5,max:-3.5};
       return{min:-maxSlide,max:maxSlide};
     }
     function initialShift(id){
       if(id==='merchandise-mart')return -4.0;
-      if(id==='300-wacker')return -3.2;
-      if(id==='willis-tower')return 3.2;
+      if(id==='300-wacker')return 4.6;
+      if(id==='willis-tower')return -4.6;
       return 0;
     }
     function updatePosition(m){
@@ -105,7 +105,7 @@ export async function enablePoiBankOffsets(build){
       placements.push(m);
     });
 
-    const minGap=7.5;
+    const minGap=8.5;
     for(let pass=0;pass<12;pass++){
       let moved=false;
       for(let i=0;i<placements.length;i++){
