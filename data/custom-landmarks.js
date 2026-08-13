@@ -20,6 +20,26 @@ export const LANDMARK_OVERRIDES = {
   },
   'wolf-point': {
     fact: 'A special one for our healthcare IT guests: look toward the west end of Wolf Point for the office building with the distinctive red sculpture out front. CommonSpirit Health has offices there—an especially appropriate landmark for today’s crew.'
+  },
+  'erie-park': {
+    lat:41.8940,
+    lng:-87.6418,
+    side:'Starboard'
+  },
+  'wild-mile': {
+    lat:41.90758,
+    lng:-87.65263,
+    side:'Starboard'
+  },
+  'ballys': {
+    lat:41.89626,
+    lng:-87.64753,
+    side:'Port'
+  },
+  'salt-shed': {
+    lat:41.90671,
+    lng:-87.65924,
+    side:'Port'
   }
 };
 
@@ -61,7 +81,7 @@ export const LANDMARK_ADDITIONS = [
     name:'Montgomery Ward Catalog House / 600 West Chicago',
     lat:41.89677,
     lng:-87.64349,
-    side:'Port',
+    side:'Starboard',
     route:'north',
     photo:'assets/montgomery-ward-2026.jpg',
     credit:'Friendship · Chicago River, 2026',
@@ -79,7 +99,8 @@ export const LANDMARK_ADDITIONS = [
     lng:-87.63867,
     side:'Port',
     route:'south',
-    photo:'',
+    photo:'assets/old-post-office-2026.jpg',
+    credit:'Friendship · Chicago River, 2026',
     subtitle:'A 2.5-million-square-foot mail-processing giant spanning rail lines and a highway',
     architect:'Graham, Anderson, Probst & White',
     year:'1921 / 1932 expansion',
