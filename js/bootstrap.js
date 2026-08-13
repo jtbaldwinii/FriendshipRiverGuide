@@ -17,8 +17,8 @@ async function boot(){
     await mod.startApp(version);
     const lockOverlay=await import(`./lock-overlay.js?v=${encodeURIComponent(version)}`);
     await lockOverlay.enableLockOverlay(version);
-    const bankOffsets=await import(`./poi-bank-offset.js?v=${encodeURIComponent(version)}`);
-    await bankOffsets.enablePoiBankOffsets(version);
+    const bankOffsets=await import(`./shared-poi-offset.js?v=${encodeURIComponent(version)}`);
+    await bankOffsets.enableSharedPoiOffsets(version);
     const poiUse=await import(`./poi-use.js?v=${encodeURIComponent(version)}`);
     poiUse.enablePoiUse();
   }catch(err){
