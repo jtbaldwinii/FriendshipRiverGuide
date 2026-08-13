@@ -1,120 +1,105 @@
-// Draws Goose Island as a real island between the North Branch (west) and
-// North Branch Canal (east), and re-anchors North Branch bridges to the
-// corrected river geometry before label callouts are applied.
-export async function enableGooseIslandOverlay(build){
-  const v=encodeURIComponent(String(build||Date.now()));
-  const base=await import(`../data/guide-data.js?v=${v}`);
-  const bridgeData=await import(`../data/bridges.js?v=${v}`);
-  const map=document.getElementById('map');if(!map)return;
+// Clean schematic for the North Branch around Goose Island.
+// This intentionally uses stable SVG coordinates instead of trying to force the
+// original single-line river geometry to represent two separate channels.
+export async function enableGooseIslandOverlay(){
+  const map=document.getElementById('map');
+  if(!map)return;
   const NS='http://www.w3.org/2000/svg';
 
-  // Shared channel from Wolf Point to the south tip of Goose Island.
-  const STEM=[
-    [41.88748,-87.63745],[41.88935,-87.63815],[41.89145,-87.63905],
-    [41.89355,-87.64005],[41.89555,-87.64135],[41.89715,-87.64455]
-  ];
+  // Shared SVG coordinates (viewBox 0 0 100 128).
+  // Stem = Wolf Point north to the south end of Goose Island.
+  const STEM=[[46,73],[44,69],[42,65],[40,61],[39,57]];
+  // North Branch proper on the west side of Goose Island.
+  const WEST=[[39,57],[32,53],[25,47],[19,41],[15,34],[14,29],[16,25]];
+  // North Branch Canal on the east side of Goose Island.
+  const CANAL=[[39,57],[40,51],[38,45],[35,39],[30,33],[24,28],[16,25]];
 
-  // Main North Branch: west side of Goose Island.
-  const WEST_CHANNEL=[
-    [41.89715,-87.64455],[41.89935,-87.64820],[41.90165,-87.65215],
-    [41.90410,-87.65605],[41.90655,-87.65905],[41.90865,-87.65965],
-    [41.91046,-87.65671]
-  ];
+  const path=pts=>pts.map((p,i)=>`${i?'L':'M'} ${p[0]} ${p[1]}`).join(' ');
+  const add=(tag,cls,attrs={},parent)=>{
+    const el=document.createElementNS(NS,tag);el.setAttribute('class',cls);
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));
+    (parent||map.querySelector('svg.offline-map'))?.appendChild(el);return el;
+  };
 
-  // North Branch Canal: east side of Goose Island. Deliberately straighter
-  // than the west channel so the island reads clearly at schematic scale.
-  const CANAL=[
-    [41.89715,-87.64455],[41.89935,-87.64535],[41.90175,-87.64705],
-    [41.90415,-87.64935],[41.90655,-87.65175],[41.90865,-87.65420],
-    [41.91046,-87.65671]
-  ];
+  const POIS={
+    'wolf-point':[46,73],
+    'erie-park':[49,64],
+    'montgomery-ward':[47,57],
+    'wild-mile':[42,40],
+    'ballys':[29,56],
+    'salt-shed':[8,34]
+  };
 
-  const WEST=STEM.concat(WEST_CHANNEL.slice(1));
-  const northBridges=(bridgeData.BRIDGES||[]).filter(b=>b.branch==='north');
-
-  function allPoints(){return base.RIVER.main.concat(base.RIVER.south.slice(1),base.RIVER.north.slice(1))}
-  function bounds(points){const lats=points.map(p=>p[0]),lngs=points.map(p=>p[1]);return{minLat:Math.min(...lats)-.0022,maxLat:Math.max(...lats)+.0022,minLng:Math.min(...lngs)-.0030,maxLng:Math.max(...lngs)+.0030}}
-  const B=bounds(allPoints());
-  function project(lat,lng){return{x:5+((lng-B.minLng)/(B.maxLng-B.minLng))*90,y:8+((B.maxLat-lat)/(B.maxLat-B.minLat))*112}}
-  function path(points,close=false){const d=points.map((c,i)=>{const p=project(c[0],c[1]);return`${i?'L':'M'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`}).join(' ');return close?d+' Z':d}
-  function nearest(lat,lng,pts){
-    const q=project(lat,lng);let best=null,bd=Infinity;
-    for(let i=0;i<pts.length-1;i++){
-      const a=project(pts[i][0],pts[i][1]),c=project(pts[i+1][0],pts[i+1][1]);
-      const vx=c.x-a.x,vy=c.y-a.y,wx=q.x-a.x,wy=q.y-a.y,d=vx*vx+vy*vy;
-      const t=d?Math.max(0,Math.min(1,(wx*vx+wy*vy)/d)):0;
-      const p={x:a.x+t*vx,y:a.y+t*vy};
-      const dd=(q.x-p.x)**2+(q.y-p.y)**2;
-      if(dd<bd){const mag=Math.hypot(vx,vy)||1;bd=dd;best={...p,tx:vx/mag,ty:vy/mag}}
+  function bridgeGroup(svg,name,deck,labelX,labelY,secondDeck=null){
+    const g=add('g','map-bridge north-custom-bridge',{},svg);
+    const [x1,y1,x2,y2]=deck;
+    add('line','bridge-shadow',{x1,y1,x2,y2},g);
+    add('line','bridge-deck',{x1,y1,x2,y2},g);
+    if(secondDeck){
+      const [a,b,c,d]=secondDeck;
+      add('line','bridge-shadow bridge-secondary',{x1:a,y1:b,x2:c,y2:d},g);
+      add('line','bridge-deck bridge-secondary',{x1:a,y1:b,x2:c,y2:d},g);
     }
-    return best;
+    const t=add('text','',{x:labelX,y:labelY,'text-anchor':'middle'},g);t.textContent=name;
+    return g;
   }
-  function addPath(svg,cls,d,before){const p=document.createElementNS(NS,'path');p.setAttribute('class',cls);p.setAttribute('d',d);if(before)svg.insertBefore(p,before);else svg.appendChild(p);return p}
 
-  function reanchorNorthBridges(svg){
-    const groups=[...svg.querySelectorAll('.map-bridge')];
-    groups.forEach((g,i)=>{
-      const b=northBridges[i];if(!b)return;
-      // All guide bridges on this route cross the navigated/main North Branch;
-      // Chicago Ave is near the split but still resolves cleanly on WEST.
-      const p=nearest(b.lat,b.lng,WEST);if(!p)return;
-      const nx=-p.ty,ny=p.tx,half=3.6;
-      const x1=p.x-nx*half,y1=p.y-ny*half,x2=p.x+nx*half,y2=p.y+ny*half;
-      const shadow=g.querySelector('.bridge-shadow'),deck=g.querySelector('.bridge-deck'),text=g.querySelector('text');
-      [shadow,deck].forEach(line=>{if(!line)return;line.setAttribute('x1',x1.toFixed(2));line.setAttribute('y1',y1.toFixed(2));line.setAttribute('x2',x2.toFixed(2));line.setAttribute('y2',y2.toFixed(2))});
-      if(text){const s=b.labelSide||1;text.setAttribute('x',(p.x+nx*5*s).toFixed(2));text.setAttribute('y',(p.y+ny*5*s).toFixed(2));text.setAttribute('text-anchor','middle')}
+  function drawNorth(svg,active){
+    const riverClass=active?'river-line':'context-river';
+    const coreClass=active?'river-core':'context-river-core';
+    const g=add('g',`goose-overlay ${active?'active':'context'}`,{},svg);
+
+    [STEM,WEST,CANAL].forEach(seg=>{
+      add('path',riverClass,{d:path(seg)},g);
+      if(active)add('path',coreClass,{d:path(seg)},g);
     });
+
+    // Explicit island land mass between the two channels.
+    const island='M 39 57 L 32 53 L 25 47 L 19 41 L 15 34 L 14 29 L 16 25 L 24 28 L 30 33 L 35 39 L 38 45 L 40 51 Z';
+    add('path','goose-island-land',{d:island},g);
+    const label=add('text',`goose-label${active?' active':''}`,{x:26,y:39,'text-anchor':'middle'},g);label.textContent='GOOSE ISLAND';
+
+    if(active){
+      // Replace the generic North Branch bridge groups with schematic crossings
+      // that actually span the appropriate water channel(s).
+      svg.querySelectorAll('.map-bridge:not(.north-custom-bridge)').forEach(n=>n.remove());
+      bridgeGroup(svg,'Kinzie St RR',[41,69,47,68],44,66.5);
+      bridgeGroup(svg,'Grand Ave',[38,63,45,61.5],41.5,60);
+      bridgeGroup(svg,'Chicago Ave',[35.5,57.5,42,55.5],38.5,54);
+      // Division crosses both sides of Goose Island.
+      bridgeGroup(svg,'Division St',[18,43.5,23.5,39.5],28,43,[34,43.5,39,41]);
+      bridgeGroup(svg,'North Ave',[12.5,28,18,24],14.5,22.5);
+    }
   }
 
   function apply(){
     const svg=map.querySelector('svg.offline-map');if(!svg)return;
-    const selected=(document.getElementById('routeSelect')?.value||'main')==='north';
-    const signature=selected?'north-active-v2':'north-context-v2';
-    if(svg.dataset.gooseOverlay===signature)return;
-    svg.dataset.gooseOverlay=signature;
-    svg.querySelectorAll('.goose-overlay').forEach(n=>n.remove());
+    const route=document.getElementById('routeSelect')?.value||'main';
+    svg.querySelectorAll('.goose-overlay,.north-custom-bridge').forEach(n=>n.remove());
 
-    const westD=path(WEST),canalD=path(CANAL);
-    const islandPoints=WEST_CHANNEL.concat([...CANAL].reverse().slice(1,-1));
-    const islandD=path(islandPoints,true);
-    const firstRiver=svg.querySelector('.river-line,.context-river');
-    addPath(svg,`goose-island-land goose-overlay${selected?' active':''}`,islandD,firstRiver);
+    // Remove the old North context line; the clean schematic below replaces it.
+    const ctx=svg.querySelector('.context-river[data-branch="north"]');if(ctx)ctx.remove();
 
-    if(selected){
-      const outer=svg.querySelector('.river-line'),inner=svg.querySelector('.river-core'),route=svg.querySelector('.route-line');
-      if(outer)outer.setAttribute('d',westD);if(inner)inner.setAttribute('d',westD);if(route)route.setAttribute('d',westD);
-      const before=svg.querySelector('.map-bridge')||svg.querySelector('.route-line');
-      addPath(svg,'river-line goose-overlay',canalD,before);
-      addPath(svg,'river-core goose-overlay',canalD,before);
+    if(route==='north'){
+      // Hide the generic active North river; draw the clean three-part schematic instead.
+      svg.querySelectorAll(':scope > .river-line,:scope > .river-core,:scope > .route-line').forEach(n=>n.style.display='none');
+      drawNorth(svg,true);
 
-      reanchorNorthBridges(svg);
-
-      // Re-anchor POI base centers to the appropriate channel before bank offsets.
+      // Final POI positions. Bank side is encoded directly here so the marker
+      // cannot be flipped across the channel by the generic collision code.
       svg.querySelectorAll('.map-pin').forEach(g=>{
-        const id=g.dataset.id;
-        const coords={
-          'wolf-point':[41.88770,-87.63730],
-          'erie-park':[41.8940,-87.6418],
-          'montgomery-ward':[41.89677,-87.64349],
-          'wild-mile':[41.90758,-87.65263],
-          'ballys':[41.89626,-87.64753],
-          'salt-shed':[41.90671,-87.65924]
-        }[id];
-        if(!coords)return;
-        const p=nearest(coords[0],coords[1],id==='wild-mile'?CANAL:WEST);if(!p)return;
-        const c=g.querySelector('circle');if(c){c.setAttribute('cx',p.x.toFixed(2));c.setAttribute('cy',p.y.toFixed(2))}
-        const t=g.querySelector('.pin-num');if(t){t.setAttribute('x',p.x.toFixed(2));t.setAttribute('y',(p.y+.05).toFixed(2))}
+        const p=POIS[g.dataset.id];if(!p)return;
+        g.removeAttribute('transform');
+        const c=g.querySelector('circle');if(c){c.setAttribute('cx',p[0]);c.setAttribute('cy',p[1])}
+        const t=g.querySelector('.pin-num');if(t){t.setAttribute('x',p[0]);t.setAttribute('y',p[1]+.05)}
       });
     }else{
-      const n=svg.querySelector('.context-river[data-branch="north"]');if(n)n.setAttribute('d',westD);
-      const before=svg.querySelector('.river-line');addPath(svg,'context-river goose-overlay',canalD,before);
+      drawNorth(svg,false);
     }
-
-    const gp=project(41.90425,-87.65275),label=document.createElementNS(NS,'text');
-    label.setAttribute('class',`goose-label goose-overlay${selected?' active':''}`);label.setAttribute('x',gp.x);label.setAttribute('y',gp.y);label.setAttribute('text-anchor','middle');label.textContent='GOOSE ISLAND';svg.appendChild(label);
   }
 
-  let queued=false;const schedule=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply()})};
+  let queued=false;
+  const schedule=()=>{if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;apply()})};
   new MutationObserver(schedule).observe(map,{childList:true,subtree:true});
   document.getElementById('routeSelect')?.addEventListener('change',schedule);
   document.getElementById('mapRouteSelect')?.addEventListener('change',schedule);
