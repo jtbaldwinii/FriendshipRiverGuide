@@ -55,6 +55,22 @@ export const LANDMARK_ADDITIONS = [
     style:'Art Deco / French Renaissance Revival',
     story:'Built for utility magnate Samuel Insull, the Civic Opera Building combines a grand opera house with a massive commercial office complex. From the river, the composition is especially legible: the low central auditorium, flanking office wings and tall rear tower create a monumental stepped silhouette.',
     fact:'The river facade really does resemble a giant armchair—the opera house is the “seat,” the office wings are the “arms,” and the 45-story tower is the “back.” A popular Chicago legend says Insull deliberately turned that chair’s back toward New York; the armchair form is documented, but the New York snub is best treated as lore rather than proven design intent.'
+  },
+  {
+    id:'montgomery-ward',
+    name:'Montgomery Ward Catalog House / 600 West Chicago',
+    lat:41.897222,
+    lng:-87.643611,
+    side:'Starboard',
+    route:'north',
+    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Montgomery_Ward_Catalogue_House.JPG/1280px-Montgomery_Ward_Catalogue_House.JPG',
+    credit:'TonyTheTiger / Wikimedia Commons · CC BY-SA 3.0',
+    subtitle:'A gigantic mail-order warehouse reborn as a riverfront mixed-use landmark',
+    architect:'Schmidt, Garden & Martin',
+    year:'1907–08',
+    style:'Chicago School / Industrial',
+    story:'Montgomery Ward built this enormous Catalog House directly along the North Branch to handle the explosive growth of its mail-order business. The 1.25-million-square-foot complex curves for hundreds of feet along the river and was a pioneering large-scale use of reinforced-concrete construction. After Montgomery Ward left, the landmark was rehabilitated for modern office, retail and other mixed uses as 600 West Chicago.',
+    fact:'The building was so large that workers used roller skates to carry messages and packages through its long corridors—an early version of high-speed internal logistics.'
   }
 ];
 
