@@ -5,5 +5,6 @@
 .map-lock{pointer-events:none}.map-lock .lock-chamber{fill:#c2e0ea;stroke:#70aec7;stroke-width:1.5}.map-lock .lock-gate{stroke:#53666e;stroke-width:1.05;stroke-linecap:round}.map-lock .lock-label{fill:#496875;font-size:1.7px;font-weight:900;letter-spacing:.12em;paint-order:stroke;stroke:#c2e0ea;stroke-width:.55px}
 /* Make the lake/river transition immediately legible without overpowering the route. */
 .map-lake{pointer-events:none}.map-lake .lake-water{fill:#d8edf4;stroke:#8fc5d8;stroke-width:.55;opacity:.92}.map-lake .lake-label{fill:#4c7e91;font-size:2.15px;font-weight:900;letter-spacing:.14em;opacity:.9;paint-order:stroke;stroke:#d8edf4;stroke-width:.8px}
-/* Fill any horizontal SVG letterboxing on the east side with lake color so Lake Michigan reaches the map edge. */
-#map .offline-map{background:linear-gradient(to right,#eef2f1 0 72%,#d8edf4 72% 100%)}
+/* Only the Main Branch map reaches Lake Michigan. */
+#map .offline-map{background:#eef2f1}
+#map[data-route="main"] .offline-map{background:linear-gradient(to right,#eef2f1 0 70%,#d8edf4 70% 100%)}
