@@ -70,7 +70,22 @@ export const LANDMARK_ADDITIONS = [
     year:'1907–08',
     style:'Chicago School / Industrial',
     story:'Montgomery Ward built this 1.25-million-square-foot Catalog House to handle the explosive growth of its mail-order business. The reinforced-concrete structure hugs the North Branch with a dramatic curving facade hundreds of feet long, making its industrial scale especially clear from the water. The historic building was later rehabilitated as 600 West Chicago for modern commercial and mixed uses; other nearby buildings from the Montgomery Ward complex were converted into loft residences and condominiums.',
-    fact:'The complex was so large that workers used roller skates to carry messages and packages through its long corridors. Montgomery Ward also created Rudolph the Red-Nosed Reindeer in 1939 as a holiday promotional character.'
+    fact:'The building was so enormous that employees used roller skates to move quickly through its long corridors, carrying messages and packages between departments.'
+  },
+  {
+    id:'old-post-office',
+    name:'Old Chicago Main Post Office',
+    lat:41.87559,
+    lng:-87.63867,
+    side:'Port',
+    route:'south',
+    photo:'',
+    subtitle:'A 2.5-million-square-foot mail-processing giant spanning rail lines and a highway',
+    architect:'Graham, Anderson, Probst & White',
+    year:'1921 / 1932 expansion',
+    style:'Art Deco / Classical Revival',
+    story:'The Old Chicago Main Post Office dominates the west bank of the South Branch. Built in 1921 and massively expanded in 1932, it was positioned above railroad tracks so mail could move directly between trains and the postal system. The enormous complex later sat vacant for two decades before an extensive adaptive-reuse project transformed it into modern office space while preserving its monumental riverfront presence.',
+    fact:'Ida B. Wells Drive passes directly through the building—an unusual compromise that allowed the huge post office to coexist with Chicago’s planned east-west roadway connection.'
   }
 ];
 
@@ -81,5 +96,7 @@ export const ROUTE_INSERTS = [
   {route:'north',direction:'return',id:'chicago-harbor-lock',after:'st-regis'},
 
   {route:'south',direction:'outbound',id:'civic-opera',after:'150-riverside'},
-  {route:'south',direction:'return',id:'civic-opera',before:'150-riverside'}
+  {route:'south',direction:'return',id:'civic-opera',before:'150-riverside'},
+  {route:'south',direction:'outbound',id:'old-post-office',after:'willis-tower'},
+  {route:'south',direction:'return',id:'old-post-office',after:'river-city'}
 ];
