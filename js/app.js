@@ -1,6 +1,6 @@
 let BUILD='dev';
 let LANDMARKS=[],TOUR_ORDERS={},RIVER={},MAP_REFS=[],BRIDGES=[];
-let currentRoute='south',direction='outbound',currentIndex=0,userPos=null,watchId=null;
+let currentRoute='main',direction='outbound',currentIndex=0,userPos=null,watchId=null;
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 
 export async function startApp(build){
@@ -15,6 +15,7 @@ export async function startApp(build){
     const custom=await import(`../data/custom-landmarks.js?v=${encodeURIComponent(BUILD)}`);
     applyCustomData(custom);
   }catch(e){console.warn('Custom landmark layer unavailable',e)}
+  configureBranchRoutes();
   try{
     const b=await import(`../data/bridges.js?v=${encodeURIComponent(BUILD)}`);
     BRIDGES=b.BRIDGES||[];
@@ -33,6 +34,23 @@ function applyCustomData({LANDMARK_OVERRIDES={},LANDMARK_ADDITIONS=[],ROUTE_INSE
     let i=e.after?arr.indexOf(e.after)+1:e.before?arr.indexOf(e.before):arr.length;
     if(i<0)i=arr.length;arr.splice(i,0,e.id);
   }
+}
+
+function configureBranchRoutes(){
+  TOUR_ORDERS={
+    main:{
+      outbound:['chicago-harbor-lock','st-regis','aqua','wrigley','trump','marina-city','merchandise-mart','wolf-point'],
+      return:['wolf-point','merchandise-mart','marina-city','trump','wrigley','carbide','aqua','st-regis','chicago-harbor-lock']
+    },
+    south:{
+      outbound:['wolf-point','150-riverside','civic-opera','300-wacker','willis-tower','river-city','st-charles-bridge'],
+      return:['st-charles-bridge','river-city','cbot','300-wacker','willis-tower','civic-opera','150-riverside','wolf-point']
+    },
+    north:{
+      outbound:['wolf-point','erie-park','wild-mile','ballys','salt-shed'],
+      return:['salt-shed','ballys','wild-mile','erie-park','wolf-point']
+    }
+  };
 }
 
 const routeItems=()=>TOUR_ORDERS[currentRoute][direction].map(id=>LANDMARKS.find(x=>x.id===id)).filter(Boolean);
@@ -66,7 +84,7 @@ function openDetail(id){
 }
 function closeDetail(){$('#detailModal').classList.remove('open');$('#detailModal').setAttribute('aria-hidden','true')}
 
-function activeRiverPoints(){return RIVER.main.concat((currentRoute==='north'?RIVER.north:RIVER.south).slice(1))}
+function activeRiverPoints(){return currentRoute==='main'?RIVER.main:currentRoute==='south'?RIVER.south:RIVER.north}
 function mapBoundsFor(points,landmarks){const lats=points.map(p=>p[0]).concat(landmarks.map(l=>l.lat)),lngs=points.map(p=>p[1]).concat(landmarks.map(l=>l.lng));return{minLat:Math.min(...lats)-.0018,maxLat:Math.max(...lats)+.0018,minLng:Math.min(...lngs)-.0025,maxLng:Math.max(...lngs)+.0025}}
 let MAP_BOUNDS=null;
 function project(lat,lng){const b=MAP_BOUNDS,x=(lng-b.minLng)/(b.maxLng-b.minLng),y=(b.maxLat-lat)/(b.maxLat-b.minLat);return{x:5+x*90,y:8+y*112}}
@@ -74,7 +92,7 @@ function geoPath(points){return points.map((c,i)=>{const p=project(c[0],c[1]);re
 function nearestProjection(lat,lng,pts){const q=project(lat,lng);let best=null,bd=Infinity;for(let i=0;i<pts.length-1;i++){const a=project(pts[i][0],pts[i][1]),b=project(pts[i+1][0],pts[i+1][1]),vx=b.x-a.x,vy=b.y-a.y,wx=q.x-a.x,wy=q.y-a.y,d=vx*vx+vy*vy,t=d?Math.max(0,Math.min(1,(wx*vx+wy*vy)/d)):0,p={x:a.x+t*vx,y:a.y+t*vy},dd=(q.x-p.x)**2+(q.y-p.y)**2;if(dd<bd){const mag=Math.hypot(vx,vy)||1;bd=dd;best={...p,tx:vx/mag,ty:vy/mag}}}return best}
 function inBounds(r){const b=MAP_BOUNDS;return r.lat>=b.minLat&&r.lat<=b.maxLat&&r.lng>=b.minLng&&r.lng<=b.maxLng}
 function bridgeSvg(activeRiver){
-  return BRIDGES.filter(b=>b.branch==='main'||b.branch===currentRoute).map(b=>{
+  return BRIDGES.filter(b=>b.branch===currentRoute).map(b=>{
     const p=nearestProjection(b.lat,b.lng,activeRiver);if(!p)return '';
     const nx=-p.ty,ny=p.tx,half=3.6,x1=p.x-nx*half,y1=p.y-ny*half,x2=p.x+nx*half,y2=p.y+ny*half,s=b.labelSide||1,lx=p.x+nx*5.0*s,ly=p.y+ny*5.0*s;
     const anchor=nx*s>.18?'start':nx*s<-.18?'end':'middle';
@@ -83,19 +101,17 @@ function bridgeSvg(activeRiver){
 }
 
 function renderMap(){
-  const target=$('#map');if(!target)return;const ordered=routeItems(),activeRiver=activeRiverPoints();MAP_BOUNDS=mapBoundsFor(activeRiver,ordered);
-  const context=currentRoute==='north'?RIVER.south:RIVER.north;
+  const target=$('#map');if(!target)return;const ordered=routeItems(),activeRiver=activeRiverPoints();MAP_BOUNDS=mapBoundsFor(activeRiver,ordered);target.dataset.route=currentRoute;
   const river=`<path class="river-line" d="${geoPath(activeRiver)}"></path><path class="river-core" d="${geoPath(activeRiver)}"></path>`;
-  const contextRiver=`<path class="context-river" d="${geoPath(context)}"></path>`;
   const bridges=bridgeSvg(activeRiver);
   const route=`<path class="route-line" d="${geoPath(activeRiver)}"></path>`;
   const pins=ordered.map((l,i)=>{const p=nearestProjection(l.lat,l.lng,activeRiver);return `<g class="map-pin" data-id="${l.id}"><circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="2.65"></circle><text class="pin-num" x="${p.x.toFixed(2)}" y="${(p.y+.05).toFixed(2)}">${i+1}</text></g>`}).join('');
   let up='';if(userPos&&inBounds(userPos)){const p=project(userPos.lat,userPos.lng),ar=Math.min(8,Math.max(2,(userPos.accuracy||30)/65));up=`<circle class="user-accuracy" cx="${p.x}" cy="${p.y}" r="${ar}"></circle><circle class="user-dot" cx="${p.x}" cy="${p.y}" r="2.6"></circle>`}
   const refs=MAP_REFS.filter(inBounds).filter(r=>!/Michigan|State St|Lake St|Jackson|Roosevelt|Chicago Ave|North Ave|16th St/.test(r.name)).map(r=>{const p=project(r.lat,r.lng);return `<g class="map-ref"><circle cx="${p.x}" cy="${p.y}" r=".55"></circle><text text-anchor="${r.anchor}" x="${p.x+r.dx}" y="${p.y+r.dy}">${esc(r.name)}</text></g>`}).join('');
-  const lake=project(41.8884,-87.6107),legend=ordered.map((l,i)=>`<div class="map-key ${i===currentIndex?'active':''}" data-id="${l.id}"><b>${i+1}</b><span>${esc(l.name)}</span></div>`).join('');
-  target.innerHTML=`<svg class="offline-map" viewBox="0 0 100 128" preserveAspectRatio="xMidYMid meet"><text class="map-bg-label" x="94" y="7" text-anchor="end">N ↑</text><text class="water-label" x="${lake.x-1}" y="${lake.y-3}" text-anchor="end">Lake Michigan</text>${contextRiver}${river}${bridges}${route}${refs}${pins}${up}</svg><div class="map-legend">${legend}</div>`;
+  const legend=ordered.map((l,i)=>`<div class="map-key ${i===currentIndex?'active':''}" data-id="${l.id}"><b>${i+1}</b><span>${esc(l.name)}</span></div>`).join('');
+  target.innerHTML=`<svg class="offline-map" viewBox="0 0 100 128" preserveAspectRatio="xMidYMid meet"><text class="map-bg-label" x="94" y="7" text-anchor="end">N ↑</text>${river}${bridges}${route}${refs}${pins}${up}</svg><div class="map-legend">${legend}</div>`;
   target.querySelectorAll('.map-pin,.map-key').forEach(el=>el.onclick=()=>openDetail(el.dataset.id));
-  const active=ordered[currentIndex];$('#mapSheetTitle').textContent=currentRoute==='north'?'Main + North Branch':'Main + South Branch';if(active)$('#mapSheetText').textContent=`${direction[0].toUpperCase()+direction.slice(1)} • Stop ${currentIndex+1}: ${active.name}${userPos?' • '+fmtDist(distanceMeters(userPos,active)):''} • Bridge decks are drawn across the river.`;
+  const active=ordered[currentIndex],titles={main:'Main Branch',south:'South Branch',north:'North Branch'};$('#mapSheetTitle').textContent=titles[currentRoute];if(active)$('#mapSheetText').textContent=`${direction[0].toUpperCase()+direction.slice(1)} • Stop ${currentIndex+1}: ${active.name}${userPos?' • '+fmtDist(distanceMeters(userPos,active)):''} • Bridge decks are drawn across the river.`;
 }
 
 function nearestForRoute(){if(!userPos)return;const items=routeItems();let best=0,bestD=Infinity;items.forEach((l,i)=>{const d=distanceMeters(userPos,l);if(d<bestD){bestD=d;best=i}});if(bestD<350){currentIndex=best;renderCruise()}$('#gpsStatus').classList.add('live');$('#gpsStatus').innerHTML=`<div><span class="eyebrow">GPS LIVE</span><strong>${fmtDist(bestD)} from ${esc(items[best].name)}</strong></div><p>Reported accuracy: ${userPos.accuracy?Math.round(userPos.accuracy*3.28084)+' ft':'—'}. Nearby landmarks auto-surface within about 1,150 ft.</p>`;renderMap()}
