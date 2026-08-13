@@ -75,11 +75,11 @@ export async function enableSharedPoiOffsets(build) {
 
     function limits(id) {
       if (route === 'main' && id === 'merchandise-mart') return { min: -4.5, max: -2.8 };
-      // Preserve actual east/west order on the Main Branch: Trump is east of Marina City.
       if (route === 'main' && id === 'trump') return { min: -4.5, max: -1.5 };
       if (route === 'main' && id === 'marina-city') return { min: 1.5, max: 4.5 };
       if (route === 'south' && id === '300-wacker') return { min: 2, max: 5.5 };
       if (route === 'south' && id === 'willis-tower') return { min: -5.5, max: -2 };
+      if (route === 'south' && id === 'old-post-office') return { min: -1.5, max: 1.5 };
       if (route === 'north' && id === 'montgomery-ward') return { min: -2.0, max: 2.0 };
       return { min: -5.5, max: 5.5 };
     }
@@ -112,10 +112,11 @@ export async function enableSharedPoiOffsets(build) {
       const offset = Math.max(9, Math.min(12, p.dist));
       const m = { id: l.id, g, p, baseOx: dx / mag * offset, baseOy: dy / mag * offset, shift: initial(l.id) };
 
-      // Montgomery Ward is physically on the west bank. Pin it left/west of the
-      // North Branch instead of allowing the generic nearest-bank calculation
-      // or collision solver to flip it across the river.
       if (route === 'north' && l.id === 'montgomery-ward') {
+        m.baseOx = -11.0;
+        m.baseOy = 0;
+      }
+      if (route === 'south' && l.id === 'old-post-office') {
         m.baseOx = -11.0;
         m.baseOy = 0;
       }
