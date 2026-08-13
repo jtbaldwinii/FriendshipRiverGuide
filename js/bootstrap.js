@@ -17,10 +17,10 @@ async function boot(){
     await mod.startApp(version);
     const lockOverlay=await import(`./lock-overlay.js?v=${encodeURIComponent(version)}`);
     await lockOverlay.enableLockOverlay(version);
-    const gooseIsland=await import(`./goose-island-overlay.js?v=${encodeURIComponent(version)}`);
-    await gooseIsland.enableGooseIslandOverlay(version);
     const bankOffsets=await import(`./shared-poi-offset.js?v=${encodeURIComponent(version)}`);
     await bankOffsets.enableSharedPoiOffsets(version);
+    const gooseIsland=await import(`./goose-island-overlay.js?v=${encodeURIComponent(version)}`);
+    await gooseIsland.enableGooseIslandOverlay(version);
     const bridgeCallouts=await import(`./bridge-callouts.js?v=${encodeURIComponent(version)}`);
     bridgeCallouts.enableBridgeCallouts();
     const poiUse=await import(`./poi-use.js?v=${encodeURIComponent(version)}`);
