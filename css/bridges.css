@@ -1,12 +1,9 @@
 .map-bridge{pointer-events:none}.map-bridge .bridge-shadow{stroke:#fffdf8;stroke-width:2.6;stroke-linecap:round;opacity:.95}.map-bridge .bridge-deck{stroke:#53666e;stroke-width:1.15;stroke-linecap:round}.map-bridge text{fill:#344b55;font-size:2.05px;font-weight:800;paint-order:stroke;stroke:#fffdf8;stroke-width:.7px;stroke-linejoin:round}
 /* Keep route guidance visually subordinate to bridges and POIs. */
 .route-line{stroke:#31586b!important;stroke-width:.55!important;stroke-dasharray:.15 2.1!important;stroke-linecap:round;opacity:.34!important}
-/* Non-selected branches stay visible as geographic context without competing with the active route. */
-.branch-context{fill:none;stroke:#b8c3c7;stroke-width:5.3;stroke-linecap:round;stroke-linejoin:round;opacity:.46;pointer-events:none}
-/* Chicago Harbor Lock: a squared chamber overlay replaces the rounded river-end look. */
+/* Chicago Harbor Lock. */
 .map-lock{pointer-events:none}.map-lock .lock-chamber{fill:#c2e0ea;stroke:#70aec7;stroke-width:1.5}.map-lock .lock-gate{stroke:#53666e;stroke-width:1.05;stroke-linecap:round}.map-lock .lock-label{fill:#496875;font-size:1.7px;font-weight:900;letter-spacing:.12em;paint-order:stroke;stroke:#c2e0ea;stroke-width:.55px}
-/* Make the lake/river transition immediately legible without overpowering the route. */
+/* Lake Michigan is part of the shared map on every branch. */
 .map-lake{pointer-events:none}.map-lake .lake-water{fill:#d8edf4;stroke:#8fc5d8;stroke-width:.55;opacity:.92}.map-lake .lake-label{fill:#4c7e91;font-size:2.15px;font-weight:900;letter-spacing:.14em;opacity:.9;paint-order:stroke;stroke:#d8edf4;stroke-width:.8px}
-/* Only the Main Branch map reaches Lake Michigan. */
-#map .offline-map{background:#eef2f1}
-#map[data-route="main"] .offline-map{background:linear-gradient(to right,#eef2f1 0 70%,#d8edf4 70% 100%)}
+#map .offline-map{background:linear-gradient(to right,#eef2f1 0 70%,#d8edf4 70% 100%)}
+.map-route-strip{padding-bottom:8px;background:#eef2f1}.map-route-strip select{max-width:280px}
