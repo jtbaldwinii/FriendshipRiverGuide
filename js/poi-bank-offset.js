@@ -61,10 +61,18 @@ export async function enablePoiBankOffsets(build){
     const maxSlide=4.5;
 
     function shiftLimits(m){
-      // Merchandise Mart sits on the straight Main Branch east of Wolf Point; do not let
-      // generic collision handling drag it back toward the confluence corner.
       if(m.id==='merchandise-mart')return{min:-4.5,max:-2.8};
+      // Keep 300 South Wacker and Willis deliberately on opposite ends of their
+      // permitted along-bank movement so both numbered markers remain tappable.
+      if(m.id==='300-wacker')return{min:-4.5,max:-2.0};
+      if(m.id==='willis-tower')return{min:2.0,max:4.5};
       return{min:-maxSlide,max:maxSlide};
+    }
+    function initialShift(id){
+      if(id==='merchandise-mart')return -4.0;
+      if(id==='300-wacker')return -3.2;
+      if(id==='willis-tower')return 3.2;
+      return 0;
     }
     function updatePosition(m){
       const lim=shiftLimits(m);
@@ -81,7 +89,7 @@ export async function enablePoiBankOffsets(build){
 
       const dx=p.q.x-p.x,dy=p.q.y-p.y,mag=Math.hypot(dx,dy)||1;
       const bankOffset=Math.max(9.0,Math.min(12.0,p.dist));
-      const m={id:l.id,g,p,baseOx:dx/mag*bankOffset,baseOy:dy/mag*bankOffset,shift:l.id==='merchandise-mart'?-4.0:0};
+      const m={id:l.id,g,p,baseOx:dx/mag*bankOffset,baseOy:dy/mag*bankOffset,shift:initialShift(l.id)};
       updatePosition(m);
 
       if(labelHits(m.x,m.y)){
@@ -97,7 +105,7 @@ export async function enablePoiBankOffsets(build){
       placements.push(m);
     });
 
-    const minGap=7.0;
+    const minGap=7.5;
     for(let pass=0;pass<12;pass++){
       let moved=false;
       for(let i=0;i<placements.length;i++){
