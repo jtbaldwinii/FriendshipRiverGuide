@@ -29,14 +29,14 @@ document.documentElement.classList.add("js");
 <main>
 <section id="cruiseView" class="view active">
   <div class="route-strip">
-    <select id="routeSelect" aria-label="Tour route"><option value="south">Main + South Branch</option><option value="north">Main + North Branch</option></select>
+    <select id="routeSelect" aria-label="River branch"><option value="main">Main Branch</option><option value="south">South Branch</option><option value="north">North Branch</option></select>
     <div class="direction-toggle" role="group"><button data-dir="outbound" class="active">Outbound</button><button data-dir="return">Return</button></div>
   </div>
   <article id="heroCard" class="hero-card">
-    <div class="hero-image"><span class="hero-badge">LANDMARK 1</span><div class="hero-title-wrap"><span class="eyebrow">OUTBOUND • STARBOARD</span><h1>St. Regis Chicago</h1><p>Jeanne Gang’s stacked, flowing skyline landmark</p></div></div>
-    <div class="hero-body"><p>Three interconnected towers step rhythmically toward the sky, creating one of Chicago’s most distinctive silhouettes.</p></div>
+    <div class="hero-image"><span class="hero-badge">LANDMARK 1</span><div class="hero-title-wrap"><span class="eyebrow">OUTBOUND • AHEAD</span><h1>Chicago Harbor Lock</h1><p>The gateway between Lake Michigan and the Chicago River</p></div></div>
+    <div class="hero-body"><p>The Main Branch begins at the Chicago Harbor Lock and runs west to Wolf Point.</p></div>
   </article>
-  <section class="next-panel"><div><span class="eyebrow">UP NEXT</span><h3 id="nextName">Aqua</h3><p id="nextMeta">Starboard</p></div><div class="next-actions"><button id="prevBtn" class="circle-btn prev-btn" aria-label="Previous landmark">←</button><button id="nextBtn" class="circle-btn" aria-label="Next landmark">→</button></div></section>
+  <section class="next-panel"><div><span class="eyebrow">UP NEXT</span><h3 id="nextName">St. Regis Chicago</h3><p id="nextMeta">Starboard</p></div><div class="next-actions"><button id="prevBtn" class="circle-btn prev-btn" aria-label="Previous landmark">←</button><button id="nextBtn" class="circle-btn" aria-label="Next landmark">→</button></div></section>
   <section class="status-card" id="gpsStatus"><div><span class="eyebrow">GPS STATUS</span><strong>Not started</strong></div><p>Tap Start GPS for live location. Cruise Mode also works manually with the arrows.</p></section>
 </section>
 <section id="mapView" class="view"><div id="map"></div><div class="map-sheet"><strong id="mapSheetTitle">Tour map</strong><span id="mapSheetText">Tap a landmark pin for details.</span></div></section>
