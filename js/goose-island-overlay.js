@@ -7,14 +7,12 @@ export async function enableGooseIslandOverlay(build){
   const map=document.getElementById('map');if(!map)return;
   const NS='http://www.w3.org/2000/svg';
 
-  // Shared stem from Wolf Point, then the west/main channel around Goose Island.
   const WEST=[
     [41.88748,-87.63745],[41.88930,-87.63820],[41.89130,-87.63910],
     [41.89340,-87.64000],[41.89550,-87.64100],[41.89750,-87.64494],
     [41.89940,-87.64870],[41.90170,-87.65220],[41.90410,-87.65570],
     [41.90670,-87.65920],[41.90880,-87.66020],[41.91046,-87.65671]
   ];
-  // East channel / North Branch Canal around Goose Island.
   const CANAL=[
     [41.89750,-87.64494],[41.89950,-87.64730],[41.90200,-87.64950],
     [41.90435,-87.65041],[41.90758,-87.65263],[41.90920,-87.65480],
@@ -31,8 +29,11 @@ export async function enableGooseIslandOverlay(build){
 
   function apply(){
     const svg=map.querySelector('svg.offline-map');if(!svg)return;
-    svg.querySelectorAll('.goose-overlay').forEach(n=>n.remove());
     const selected=(document.getElementById('routeSelect')?.value||'main')==='north';
+    const signature=selected?'north-active':'north-context';
+    if(svg.dataset.gooseOverlay===signature)return;
+    svg.dataset.gooseOverlay=signature;
+    svg.querySelectorAll('.goose-overlay').forEach(n=>n.remove());
     const westD=path(WEST),canalD=path(CANAL);
 
     if(selected){
@@ -42,10 +43,8 @@ export async function enableGooseIslandOverlay(build){
       addPath(svg,'river-line goose-overlay',canalD,before);
       addPath(svg,'river-core goose-overlay',canalD,before);
 
-      // Re-anchor POI base centers to the corrected waterway before bank offsets run.
       svg.querySelectorAll('.map-pin').forEach(g=>{
-        const id=g.dataset.id;let l=null;
-        // Coordinates after custom overrides for known North Branch POIs.
+        const id=g.dataset.id;
         const coords={
           'wolf-point':[41.88770,-87.63730],
           'erie-park':[41.8940,-87.6418],
@@ -56,7 +55,7 @@ export async function enableGooseIslandOverlay(build){
         }[id];
         if(!coords)return;
         const p=nearest(coords[0],coords[1],id==='wild-mile'?CANAL:WEST);if(!p)return;
-        g.querySelector('circle')?.setAttribute('cx',p.x.toFixed(2));g.querySelector('circle')?.setAttribute('cy',p.y.toFixed(2));
+        const c=g.querySelector('circle');if(c){c.setAttribute('cx',p.x.toFixed(2));c.setAttribute('cy',p.y.toFixed(2))}
         const t=g.querySelector('.pin-num');if(t){t.setAttribute('x',p.x.toFixed(2));t.setAttribute('y',(p.y+.05).toFixed(2))}
       });
     }else{
@@ -64,7 +63,6 @@ export async function enableGooseIslandOverlay(build){
       const before=svg.querySelector('.river-line');addPath(svg,'context-river goose-overlay',canalD,before);
     }
 
-    // Goose Island label between the two channels.
     const gp=project(41.9042,-87.6530),label=document.createElementNS(NS,'text');
     label.setAttribute('class',`goose-label goose-overlay${selected?' active':''}`);label.setAttribute('x',gp.x);label.setAttribute('y',gp.y);label.setAttribute('text-anchor','middle');label.textContent='GOOSE ISLAND';svg.appendChild(label);
   }
