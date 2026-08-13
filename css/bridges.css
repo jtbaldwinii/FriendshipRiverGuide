@@ -10,3 +10,5 @@
 .map-route-strip{padding-bottom:8px;background:#eef2f1}.map-route-strip select{max-width:280px}
 /* Context branches should read as river lines, not gray filled areas. */
 .context-river{fill:none!important;stroke:#a7b4b8!important;stroke-width:3.1!important;opacity:.42!important;stroke-linecap:round!important;stroke-linejoin:round!important;vector-effect:non-scaling-stroke}
+/* Goose Island / North Branch Canal context. */
+.goose-label{pointer-events:none;fill:#8a999e;font-size:1.65px;font-weight:850;letter-spacing:.1em;paint-order:stroke;stroke:#eef2f1;stroke-width:.65px}.goose-label.active{fill:#526a75;font-size:1.8px}
