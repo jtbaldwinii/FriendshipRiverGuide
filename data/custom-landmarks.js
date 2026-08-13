@@ -8,7 +8,7 @@ export const LANDMARK_OVERRIDES = {
     fact: 'See the dark band near the top of the tallest tower? Wind-tunnel testing showed the building would sway more than desired for occupant comfort, so the design was revised to create an unoccupied, two-story-tall “blow-through” opening. Letting wind pass through the tower reduces wind-induced motion—the unusual dark gap is structural engineering made visible.'
   },
   'willis-tower': {
-    photo: 'assets/willis-tower-2026(1).jpg',
+    photo: 'assets/willis-tower-2026.jpg',
     fact: 'The bundled-tube idea is famously explained with a handful of cigarettes: nine cigarettes held together illustrate the nine structural tubes that form the tower. Engineer Fazlur Rahman Khan used the cigarette-bundle analogy to make the structural concept easy to visualize.'
   },
   'marina-city': {
@@ -43,8 +43,8 @@ export const LANDMARK_ADDITIONS = [
     lng:-87.63749,
     side:'Port',
     route:'south',
-    photo:'https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Chicago_-_Chicago_River_-_Civic_Opera_Building.jpg/1280px-Chicago_-_Chicago_River_-_Civic_Opera_Building.jpg',
-    credit:'HaSt / Wikimedia Commons · CC BY-SA 4.0',
+    photo:'assets/civic-opera-2026.jpg',
+    credit:'Friendship · Chicago River, 2026',
     subtitle:'Chicago’s monumental opera house disguised as a riverfront office tower',
     architect:'Graham, Anderson, Probst & White',
     year:'1929',
