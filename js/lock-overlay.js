@@ -2,7 +2,6 @@ export async function enableLockOverlay(build){
   const v=encodeURIComponent(String(build||Date.now()));
   const base=await import(`../data/guide-data.js?v=${v}`);
   let landmarks=base.LANDMARKS.map(x=>({...x}));
-  const orders=JSON.parse(JSON.stringify(base.TOUR_ORDERS));
   const river=base.RIVER;
 
   try{
@@ -10,20 +9,18 @@ export async function enableLockOverlay(build){
     const overrides=custom.LANDMARK_OVERRIDES||{};
     for(const l of landmarks)if(overrides[l.id])Object.assign(l,overrides[l.id]);
     for(const add of custom.LANDMARK_ADDITIONS||[])if(!landmarks.some(x=>x.id===add.id))landmarks.push({...add});
-    for(const e of custom.ROUTE_INSERTS||[]){
-      const arr=orders?.[e.route]?.[e.direction];if(!arr||arr.includes(e.id))continue;
-      let i=e.after?arr.indexOf(e.after)+1:e.before?arr.indexOf(e.before):arr.length;
-      if(i<0)i=arr.length;arr.splice(i,0,e.id);
-    }
   }catch(e){console.warn('Lock overlay custom data unavailable',e)}
 
   const map=document.getElementById('map');
   if(!map)return;
   const NS='http://www.w3.org/2000/svg';
-  const route=()=>document.getElementById('routeSelect')?.value||'south';
+  const route=()=>document.getElementById('routeSelect')?.value||'main';
   const dir=()=>document.querySelector('.direction-toggle button.active')?.dataset.dir||'outbound';
-  const activeRiver=r=>river.main.concat((r==='north'?river.north:river.south).slice(1));
-  const routeItems=(r,d)=>(orders?.[r]?.[d]||[]).map(id=>landmarks.find(x=>x.id===id)).filter(Boolean);
+  const MAIN_ORDERS={
+    outbound:['chicago-harbor-lock','st-regis','aqua','wrigley','trump','marina-city','merchandise-mart','wolf-point'],
+    return:['wolf-point','merchandise-mart','marina-city','trump','wrigley','carbide','aqua','st-regis','chicago-harbor-lock']
+  };
+  const routeItems=d=>(MAIN_ORDERS[d]||MAIN_ORDERS.outbound).map(id=>landmarks.find(x=>x.id===id)).filter(Boolean);
   function bounds(points,items){
     const lats=points.map(p=>p[0]).concat(items.map(l=>l.lat)),lngs=points.map(p=>p[1]).concat(items.map(l=>l.lng));
     return{minLat:Math.min(...lats)-.0018,maxLat:Math.max(...lats)+.0018,minLng:Math.min(...lngs)-.0025,maxLng:Math.max(...lngs)+.0025};
@@ -35,18 +32,18 @@ export async function enableLockOverlay(build){
   function line(x1,y1,x2,y2,cls){const e=document.createElementNS(NS,'line');for(const [k,val] of Object.entries({x1,y1,x2,y2}))e.setAttribute(k,val);e.setAttribute('class',cls);return e}
 
   function apply(){
-    const svg=map.querySelector('svg.offline-map');if(!svg||svg.querySelector('.map-lock'))return;
+    const svg=map.querySelector('svg.offline-map');if(!svg)return;
+    if(route()!=='main')return;
+    if(svg.querySelector('.map-lock'))return;
     svg.querySelectorAll('.map-ref').forEach(g=>{if(/Chicago Lock/i.test(g.textContent||''))g.remove()});
 
-    const r=route(),d=dir(),pts=activeRiver(r),items=routeItems(r,d),b=bounds(pts,items);
+    const items=routeItems(dir()),b=bounds(river.main,items);
     const west=project(41.88831,-87.61345,b),east=project(41.88831,-87.61060,b);
     const left=Math.min(west.x,east.x),right=Math.max(west.x,east.x)+1.0,cy=(west.y+east.y)/2,h=7.0;
 
-    // Treat the eastern quarter of the schematic as Lake Michigan. This is intentionally
-    // diagrammatic rather than geographic so the lake/lock/river transition is obvious.
     const lake=document.createElementNS(NS,'g');lake.setAttribute('class','map-lake');
     const lakeRect=document.createElementNS(NS,'rect');
-    const lakeStart=Math.min(right-.2,72);
+    const lakeStart=76;
     lakeRect.setAttribute('x',lakeStart);lakeRect.setAttribute('y','0');
     lakeRect.setAttribute('width',100-lakeStart);lakeRect.setAttribute('height','128');
     lakeRect.setAttribute('class','lake-water');lake.appendChild(lakeRect);
