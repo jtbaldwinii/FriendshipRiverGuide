@@ -8,3 +8,5 @@
 .map-lake{pointer-events:none}.map-lake .lake-water{fill:#d8edf4;stroke:#8fc5d8;stroke-width:.55;opacity:.92}.map-lake .lake-label{fill:#4c7e91;font-size:2.15px;font-weight:900;letter-spacing:.14em;opacity:.9;paint-order:stroke;stroke:#d8edf4;stroke-width:.8px}
 #map .offline-map{background:linear-gradient(to right,#eef2f1 0 70%,#d8edf4 70% 100%)}
 .map-route-strip{padding-bottom:8px;background:#eef2f1}.map-route-strip select{max-width:280px}
+/* Context branches should read as river lines, not gray filled areas. */
+.context-river{fill:none!important;stroke:#a7b4b8!important;stroke-width:3.1!important;opacity:.42!important;stroke-linecap:round!important;stroke-linejoin:round!important;vector-effect:non-scaling-stroke}
