@@ -14,7 +14,7 @@ export async function enablePoiBankOffsets(build){
   const ORDERS={
     main:{outbound:['chicago-harbor-lock','st-regis','aqua','wrigley','trump','marina-city','merchandise-mart','wolf-point'],return:['wolf-point','merchandise-mart','marina-city','trump','wrigley','carbide','aqua','st-regis','chicago-harbor-lock']},
     south:{outbound:['wolf-point','150-riverside','civic-opera','300-wacker','willis-tower','river-city','st-charles-bridge'],return:['st-charles-bridge','river-city','cbot','300-wacker','willis-tower','civic-opera','150-riverside','wolf-point']},
-    north:{outbound:['wolf-point','erie-park','wild-mile','ballys','salt-shed'],return:['salt-shed','ballys','wild-mile','erie-park','wolf-point']}
+    north:{outbound:['wolf-point','erie-park','montgomery-ward','wild-mile','ballys','salt-shed'],return:['salt-shed','ballys','wild-mile','montgomery-ward','erie-park','wolf-point']}
   };
 
   const map=document.getElementById('map');
