@@ -17,6 +17,7 @@ const TYPE_BY_TITLE={
   'Chicago Board of Trade & Ceres':'Commercial / Office',
   'Carbide & Carbon Building':'Hotel / Commercial',
   'Erie on the Park':'Residential',
+  'Montgomery Ward Catalog House / 600 West Chicago':'Mixed Use / Adaptive Reuse',
   'The Wild Mile':'Public Space / Ecological',
   'Bally’s Chicago Site':'Entertainment / Redevelopment',
   'The Salt Shed':'Cultural / Entertainment'
