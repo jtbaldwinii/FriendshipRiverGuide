@@ -21,6 +21,8 @@ async function boot(){
     await gooseIsland.enableGooseIslandOverlay(version);
     const bankOffsets=await import(`./shared-poi-offset.js?v=${encodeURIComponent(version)}`);
     await bankOffsets.enableSharedPoiOffsets(version);
+    const bridgeCallouts=await import(`./bridge-callouts.js?v=${encodeURIComponent(version)}`);
+    bridgeCallouts.enableBridgeCallouts();
     const poiUse=await import(`./poi-use.js?v=${encodeURIComponent(version)}`);
     poiUse.enablePoiUse();
   }catch(err){
