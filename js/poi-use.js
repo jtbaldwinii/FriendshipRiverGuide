@@ -12,6 +12,7 @@ const TYPE_BY_TITLE={
   'Civic Opera House / Lyric Opera':'Cultural / Commercial',
   '300 South Wacker':'Commercial / Office',
   'Willis Tower (Sears Tower)':'Commercial / Office',
+  'Old Chicago Main Post Office':'Commercial / Adaptive Reuse',
   'River City':'Residential',
   'St. Charles Air Line Bridge':'Infrastructure',
   'Chicago Board of Trade & Ceres':'Commercial / Office',
