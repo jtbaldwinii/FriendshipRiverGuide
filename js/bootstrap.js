@@ -15,6 +15,8 @@ async function boot(){
     analytics.enableAnalytics();
     const mod=await import(`./app.js?v=${encodeURIComponent(version)}`);
     await mod.startApp(version);
+    const branchContext=await import(`./branch-context.js?v=${encodeURIComponent(version)}`);
+    await branchContext.enableBranchContext(version);
     const lockOverlay=await import(`./lock-overlay.js?v=${encodeURIComponent(version)}`);
     await lockOverlay.enableLockOverlay(version);
     const bankOffsets=await import(`./poi-bank-offset.js?v=${encodeURIComponent(version)}`);
