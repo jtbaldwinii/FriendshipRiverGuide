@@ -75,6 +75,9 @@ export async function enableSharedPoiOffsets(build) {
 
     function limits(id) {
       if (route === 'main' && id === 'merchandise-mart') return { min: -4.5, max: -2.8 };
+      // Preserve actual east/west order on the Main Branch: Trump is east of Marina City.
+      if (route === 'main' && id === 'trump') return { min: -4.5, max: -1.5 };
+      if (route === 'main' && id === 'marina-city') return { min: 1.5, max: 4.5 };
       if (route === 'south' && id === '300-wacker') return { min: 2, max: 5.5 };
       if (route === 'south' && id === 'willis-tower') return { min: -5.5, max: -2 };
       if (route === 'north' && id === 'montgomery-ward') return { min: -2.0, max: 2.0 };
@@ -82,6 +85,8 @@ export async function enableSharedPoiOffsets(build) {
     }
     function initial(id) {
       if (route === 'main' && id === 'merchandise-mart') return -4;
+      if (route === 'main' && id === 'trump') return -3;
+      if (route === 'main' && id === 'marina-city') return 3;
       if (route === 'south' && id === '300-wacker') return 3.8;
       if (route === 'south' && id === 'willis-tower') return -3.8;
       return 0;
